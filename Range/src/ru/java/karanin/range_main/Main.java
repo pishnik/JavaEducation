@@ -60,5 +60,14 @@ public class Main {
             value.print();
         }
 
+        Range[] rangeDifference = range.getDifference(anotherRange);
+        if (rangeDifference == null) {
+            System.out.println("Второй интервал полностью перекрывает первый!");
+        } else {
+            System.out.println("Разница интервалов:");
+            for (Range value : rangeDifference) {
+                value.print();
+            }
+        }
     }
 }
