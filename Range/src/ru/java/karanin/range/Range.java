@@ -31,7 +31,7 @@ public class Range {
     }
 
     public boolean isInside(double number) {
-        return number <= from && to >= number;
+        return number >= from && to >= number;
     }
 
     public void print() {
