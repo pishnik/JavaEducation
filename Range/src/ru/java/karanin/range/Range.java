@@ -35,11 +35,38 @@ public class Range {
     }
 
     public void print() {
-        System.out.printf("Диапазон: [%.2f; %.2f]%n", from, to);
+        System.out.printf("Интервал: [%.2f; %.2f]%n", from, to);
     }
 
     public double getLength() {
         return to - from;
+    }
+
+    private static boolean checkIntersection(Range range1, Range range2) {
+        if (range2.from > range1.to || range2.to < range1.from) {
+            return false;
+        }
+        if (Math.max(range1.from, range2.from) == Math.min(range1.to, range2.to)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Range getIntersection(Range range) {
+        if (range.from > to || range.to < from) {
+            return null;
+        } else {
+            return new Range(Math.max(from, range.from), Math.min(to, range.to));
+        }
+    }
+
+    public Range[] join(Range range) {
+        if (range.from > to || range.to < from) {
+            return new Range[]{this, range};
+        } else {
+            return new Range[]{new Range(Math.min(from, range.from), Math.max(to, range.to))};
+        }
     }
 
     // делаем статичным и доступным извне, для того что бы можно было проверить любые диапазоны
