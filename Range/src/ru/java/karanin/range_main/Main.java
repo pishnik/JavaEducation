@@ -10,63 +10,68 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите начало интервала: ");
-        double rangeBegin = scanner.nextDouble();
+        double range1Begin = scanner.nextDouble();
 
         System.out.print("Введите конец интервала: ");
-        double rangeEnd = scanner.nextDouble();
+        double range1End = scanner.nextDouble();
 
         // создаем диапазон
-        Range range = new Range(rangeBegin, rangeEnd);
-        range.print();
+        Range range1 = new Range(range1Begin, range1End);
+        // вывод с заголовком
+        range1.print();
 
-        System.out.printf("Длинна интервала: %.2f%n", range.getLength());
+        System.out.printf("Длинна интервала: %.2f%n", range1.getLength());
 
         System.out.print("Введите число для проверки: ");
         double number = scanner.nextDouble();
 
-        if (range.isInside(number)) {
+        if (range1.isInside(number)) {
             System.out.println("Число входит в интервал!");
         } else {
             System.out.println("Число не входит в интервал!");
         }
 
         System.out.print("Давайте сдвинем начало интервала на: ");
-        range.setFrom(range.getFrom() + scanner.nextDouble());
+        range1.setFrom(range1.getFrom() + scanner.nextDouble());
 
         System.out.print("Давайте сдвинем конец интервала на: ");
-        range.setTo(range.getTo() + scanner.nextDouble());
+        range1.setTo(range1.getTo() + scanner.nextDouble());
 
-        range.print();
-        System.out.printf("Новая длинна интервала: %.2f%n", range.getLength());
+        range1.print();
+        System.out.printf("Новая длинна интервала: %.2f%n", range1.getLength());
 
         System.out.print("Введите начало еще одного интервала: ");
-        double anotherRangeBegin = scanner.nextDouble();
+        double range2Begin = scanner.nextDouble();
 
         System.out.print("Введите конец еще одного интервала: ");
-        double anotherRangeEnd = scanner.nextDouble();
+        double range2End = scanner.nextDouble();
 
-        Range anotherRange = new Range(anotherRangeBegin, anotherRangeEnd);
+        Range range2 = new Range(range2Begin, range2End);
 
-        Range intersection = range.getIntersection(anotherRange);
+        Range intersection = range1.getIntersection(range2);
+
         if (intersection != null) {
-            System.out.printf("Пересечение интервалов: [%.2f, %.2f]%n", intersection.getFrom(), intersection.getTo());
+            System.out.println("Пересечение интервалов: " + intersection);
         } else {
             System.out.println("Пересечения интервалов нет!");
         }
 
-        Range[] rangeUnion = range.join(anotherRange);
+        Range[] union = range1.getUnion(range2);
         System.out.println("Объединение интервалов:");
-        for (Range value : rangeUnion) {
-            value.print();
+
+        for (Range range : union) {
+            System.out.println(range.toString());
         }
 
-        Range[] rangeDifference = range.getDifference(anotherRange);
-        if (rangeDifference == null) {
+        Range[] difference = range1.getDifference(range2);
+
+        if (difference.length == 0) {
             System.out.println("Второй интервал полностью перекрывает первый!");
         } else {
             System.out.println("Разница интервалов:");
-            for (Range value : rangeDifference) {
-                value.print();
+
+            for (Range range : difference) {
+                System.out.println(range.toString());
             }
         }
     }
