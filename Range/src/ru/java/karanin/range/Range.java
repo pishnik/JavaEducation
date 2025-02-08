@@ -49,7 +49,7 @@ public class Range {
     // Получение пересечения
     public Range getIntersection(Range range) {
         // сравниваем границы
-        if (range.from > to || range.to < from) {
+        if (range.from >= to || range.to <= from) {
             // не пересекаются (но границы ВКЛ)
             return null;
         }
@@ -62,7 +62,7 @@ public class Range {
         // не пересекаются
         if (range.from > to || range.to < from) {
             // отдали 2 интервала
-            return new Range[]{new Range(this.from, this.to), new Range(range.from, range.to)};
+            return new Range[]{new Range(from, to), new Range(range.from, range.to)};
         }
 
         // отдали 1 расширенный интервал
@@ -70,16 +70,22 @@ public class Range {
     }
 
     public Range[] getDifference(Range range) {
-        if (range.from > to || range.to < from) {
+        if (range.from >= to || range.to <= from) {
             // не пересекаются
             return new Range[]{new Range(from, to)};
-        } else if (range.from > from && range.to < to) {
+        }
+
+        if (range.from > from && range.to < to) {
             // второй внутри первого
             return new Range[]{new Range(from, range.from), new Range(range.to, to)};
-        } else if (range.to > from && range.to < to) {
+        }
+
+        if (range.to < to) { // избыточно && range.to > from
             // перекрытие слева
             return new Range[]{new Range(range.to, to)};
-        } else if (range.from > from && range.from < to) {
+        }
+
+        if (range.from > from) {// избыточно  && range.from < to
             // перекрытие справа
             return new Range[]{new Range(from, range.from)};
         }

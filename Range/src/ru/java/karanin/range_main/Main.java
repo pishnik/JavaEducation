@@ -10,13 +10,13 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите начало интервала: ");
-        double range1Begin = scanner.nextDouble();
+        double range1From = scanner.nextDouble();
 
         System.out.print("Введите конец интервала: ");
-        double range1End = scanner.nextDouble();
+        double range1To = scanner.nextDouble();
 
         // создаем диапазон
-        Range range1 = new Range(range1Begin, range1End);
+        Range range1 = new Range(range1From, range1To);
         // вывод с заголовком
         range1.print();
 
@@ -41,12 +41,12 @@ public class Main {
         System.out.printf("Новая длинна интервала: %.2f%n", range1.getLength());
 
         System.out.print("Введите начало еще одного интервала: ");
-        double range2Begin = scanner.nextDouble();
+        double range2From = scanner.nextDouble();
 
         System.out.print("Введите конец еще одного интервала: ");
-        double range2End = scanner.nextDouble();
+        double range2To = scanner.nextDouble();
 
-        Range range2 = new Range(range2Begin, range2End);
+        Range range2 = new Range(range2From, range2To);
 
         Range intersection = range1.getIntersection(range2);
 
@@ -60,7 +60,7 @@ public class Main {
         System.out.println("Объединение интервалов:");
 
         for (Range range : union) {
-            System.out.println(range.toString());
+            System.out.println(range);
         }
 
         Range[] difference = range1.getDifference(range2);
@@ -71,7 +71,7 @@ public class Main {
             System.out.println("Разница интервалов:");
 
             for (Range range : difference) {
-                System.out.println(range.toString());
+                System.out.println(range);
             }
         }
     }
