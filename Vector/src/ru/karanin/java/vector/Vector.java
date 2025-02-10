@@ -99,7 +99,8 @@ public class Vector {
 
     @Override
     public int hashCode() {
-        final int prime = 314;
+        final int prime = 11;
+
         int hash = 1;
         hash = prime * hash + Arrays.hashCode(numbers);
 
@@ -115,11 +116,6 @@ public class Vector {
 
         // null или другой класс
         if (object == null || object.getClass() != getClass()) {
-            return false;
-        }
-
-        // hashCode должны совпадать
-        if (object.hashCode() != hashCode()) {
             return false;
         }
 

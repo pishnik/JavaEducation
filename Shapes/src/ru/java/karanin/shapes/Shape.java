@@ -1,7 +1,6 @@
 package ru.java.karanin.shapes;
 
 public interface Shape {
-
     double getWidth();
 
     double getHeight();
@@ -9,5 +8,4 @@ public interface Shape {
     double getArea();
 
     double getPerimeter();
-
 }

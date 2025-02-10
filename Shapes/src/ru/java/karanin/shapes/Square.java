@@ -1,19 +1,27 @@
 package ru.java.karanin.shapes;
 
 public class Square implements Shape {
-    private final double sideLength;
+    private double sideLength;
 
     public Square(double sideLength) {
         this.sideLength = sideLength;
     }
 
-    //Ширина
+    public double getSideLength() {
+        return sideLength;
+    }
+
+    public void setSideLength(double sideLength) {
+        this.sideLength = sideLength;
+    }
+
+    // Ширина
     @Override
     public double getWidth() {
         return sideLength;
     }
 
-    //Высота
+    // Высота
     @Override
     public double getHeight() {
         return sideLength;
@@ -32,11 +40,13 @@ public class Square implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Квадрат [S=%.2f P=%.2f]", getArea(), getPerimeter());
+        return String.format("Квадрат со стороной %.2f [S=%.2f P=%.2f]", getSideLength(), getArea(), getPerimeter());
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 12;
+        final int prime = 11;
+
         int hash = 1;
         hash = prime * hash + Double.hashCode(sideLength);
 
@@ -45,14 +55,17 @@ public class Square implements Shape {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Square)) {
+        if (object == this) {
+            return true;
+        }
+
+        if (object == null || object.getClass() != getClass()) {
             return false;
         }
 
-        if (hashCode() != object.hashCode()) {
-            return false;
-        }
+        // привели класс
+        Square square = (Square) object;
 
-        return (object == this) || (sideLength == ((Square) object).sideLength);
+        return sideLength == square.sideLength;
     }
 }

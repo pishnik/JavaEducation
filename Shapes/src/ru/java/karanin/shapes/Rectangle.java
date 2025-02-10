@@ -1,21 +1,29 @@
 package ru.java.karanin.shapes;
 
 public class Rectangle implements Shape {
-    private final double width;
-    private final double height;
+    private double width;
+    private double height;
 
     public Rectangle(double width, double height) {
         this.width = width;
         this.height = height;
     }
 
-    //Ширина
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    // Ширина
     @Override
     public double getWidth() {
         return width;
     }
 
-    //Высота
+    // Высота
     @Override
     public double getHeight() {
         return height;
@@ -34,7 +42,7 @@ public class Rectangle implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Прямоугольник [S=%.2f P=%.2f]", getArea(), getPerimeter());
+        return String.format("Прямоугольник c высотой %.2f и шириной %.2f [S=%.2f P=%.2f]", getHeight(), getWidth(), getArea(), getPerimeter());
     }
 
     @Override
@@ -49,14 +57,17 @@ public class Rectangle implements Shape {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Rectangle)) {
+        if (object == this) {
+            return true;
+        }
+
+        if (object == null || object.getClass() != getClass()) {
             return false;
         }
 
-        if (hashCode() != object.hashCode()) {
-            return false;
-        }
+        // привели класс
+        Rectangle rectangle = (Rectangle) object;
 
-        return (object == this) || (width == ((Rectangle) object).width && height == ((Rectangle) object).height);
+        return (width == rectangle.width && height == rectangle.height);
     }
 }

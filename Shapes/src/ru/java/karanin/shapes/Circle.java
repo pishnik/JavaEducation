@@ -1,9 +1,17 @@
 package ru.java.karanin.shapes;
 
 public class Circle implements Shape {
-    private final double radius;
+    private double radius;
 
     public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
@@ -19,7 +27,7 @@ public class Circle implements Shape {
 
     @Override
     public double getArea() {
-        return Math.PI * Math.pow(radius, 2);
+        return Math.PI * radius * radius;
     }
 
     @Override
@@ -29,12 +37,13 @@ public class Circle implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Круг [S=%.2f P=%.2f]", getArea(), getPerimeter());
+        return String.format("Круг c радиусом %.2f [S=%.2f P=%.2f]", getRadius(), getArea(), getPerimeter());
     }
 
     @Override
     public int hashCode() {
-        final int prime = 10;
+        final int prime = 11;
+
         int hash = 1;
         hash = prime * hash + Double.hashCode(radius);
 
@@ -43,14 +52,17 @@ public class Circle implements Shape {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Circle)) {
+        if (object == this) {
+            return true;
+        }
+
+        if (object == null || object.getClass() != getClass()) {
             return false;
         }
 
-        if (hashCode() != object.hashCode()) {
-            return false;
-        }
+        // привели класс
+        Circle circle = (Circle) object;
 
-        return (object == this) || (radius == ((Circle) object).radius);
+        return radius == circle.radius;
     }
 }
