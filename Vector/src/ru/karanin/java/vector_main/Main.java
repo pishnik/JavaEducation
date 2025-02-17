@@ -14,6 +14,7 @@ public class Main {
 
         System.out.print("Введите размер вектора: ");
         int size = scanner.nextInt();
+
         Vector vector1 = new Vector(size);
         System.out.println("Нулевой вектор: " + vector1);
 
@@ -26,24 +27,25 @@ public class Main {
 
         System.out.println("Массив: " + Arrays.toString(userArray1));
         Vector vector2 = new Vector(userArray1);
-        System.out.println("Вектор из массива: " + vector2);
+        System.out.println("Вектор 2 из массива: " + vector2);
 
-        vector2.setNumberByPosition(0, Math.floor(random.nextDouble() * 10000) / 100);
+        vector2.setArrayNumberByIndex(0, Math.floor(random.nextDouble() * 10000) / 100);
         Vector vector3 = new Vector(vector2);
-        System.out.println("Вектор из вектора (с подменой 0 элемента): " + vector3);
+        System.out.println("Вектор 3 из вектора 2 (с подменой 0 элемента): " + vector3);
 
         Vector vector4 = new Vector(userArray1.length + 2, userArray1);
         System.out.println("Вектор 4: " + vector4);
         Vector vector5 = new Vector(userArray1.length - 2, userArray1);
         System.out.println("Вектор 5: " + vector5);
-        System.out.printf("В векторе 5, на позиции 0: %.2f%n", vector5.getNumberByPosition(0));
+        System.out.printf("В векторе 5, на позиции 0: %.2f%n", vector5.getArrayNumberByIndex(0));
+
+        System.out.print("Введите индекс элемента: ");
+        int index = scanner.nextInt();
+
+        System.out.printf("В векторе 5, на позиции %d : %.2f%n", index, vector5.getArrayNumberByIndex(index));
 
         if (vector2.equals(vector3)) {
-            System.out.println("Вектор 2 и 3 равны!");
-        }
-
-        if (vector2.equals(vector3)) {
-            System.out.println("Вектор: " + vector2 + " и вектор " + vector3 + " равны!");
+            System.out.println("Вектор 2: " + vector2 + " и вектор 3: " + vector3 + " равны!");
         }
 
         // развернем 5 вектор
@@ -79,28 +81,30 @@ public class Main {
         System.out.println("Вектор 8 (8-7): " + vector8);
 
         System.out.print("Введите скалярную величину: ");
-        double n = scanner.nextDouble();
-        vector8.multiplication(n);
-        System.out.println("Вектор 8 (8*n): " + vector8);
+        double scalar = scanner.nextDouble();
+
+        vector8.multiply(scalar);
+        System.out.println("Вектор 8 (8*scalar): " + vector8);
 
         Vector vector9 = new Vector(new double[]{1, 2, 3, 4, 5});
         Vector vector10 = new Vector(new double[]{1, 2, 3});
+        System.out.println("Вектор 9: " + vector9);
+        System.out.println("Вектор 10: " + vector10);
 
-        Vector vector11 = Vector.getAddition(vector9, vector10);
+        Vector vector11 = Vector.getSum(vector9, vector10);
         System.out.println("Вектор 11: " + vector11);
 
-        Vector vector12 = Vector.getSubtraction(vector9, vector10);
+        Vector vector12 = Vector.geDifference(vector9, vector10);
         System.out.println("Вектор 12: " + vector12);
+        System.out.printf("Длина вектора 12: %.2f%n", vector12.getLength());
 
-        Vector vector13 = Vector.getMultiplication(vector9, vector10);
-        System.out.println("Вектор 13: " + vector13);
+        double scalarProduct = Vector.getProduct(vector9, vector10);
+        System.out.printf("Скалярное произведение вектора 9 и 10: %.2f%n", scalarProduct);
 
         Vector vector14 = new Vector(new double[]{1, 2, 3});
         Vector vector15 = new Vector(new double[]{1, 2, 3, 4, 5});
-        System.out.println("Вектор 11: " + Vector.getAddition(vector14, vector15));
-        System.out.println("Вектор 12: " + Vector.getSubtraction(vector14, vector15));
-        System.out.println("Вектор 13: " + Vector.getMultiplication(vector14, vector15));
-
-
+        System.out.println("Вектор 16: " + Vector.getSum(vector14, vector15));
+        System.out.println("Вектор 17: " + Vector.geDifference(vector14, vector15));
+        System.out.println("Вектор 18: " + Vector.getProduct(vector14, vector15));
     }
 }

@@ -3,97 +3,106 @@ package ru.karanin.java.vector;
 import java.util.Arrays;
 
 public class Vector {
-    private double[] numbers;
+    private double[] numbersArray;
 
     public Vector(int size) {
         checkSize(size);
-        numbers = new double[size];
+        numbersArray = new double[size];
     }
 
     // Вектор из вектора
     public Vector(Vector vector) {
-        this.numbers = new double[vector.getSize()];
-        // можно и ручками по циклу пройтись, но там warning лезет - руками говорит, тока слабые копируют
-        System.arraycopy(vector.numbers, 0, this.numbers, 0, numbers.length);
+        numbersArray = Arrays.copyOf(vector.numbersArray, vector.numbersArray.length);
     }
 
     // Вектор из массива
-    public Vector(double[] numbers) {
-        this.numbers = new double[numbers.length];
-        System.arraycopy(numbers, 0, this.numbers, 0, numbers.length);
+    public Vector(double[] numbersArray) {
+        checkSize(numbersArray.length);
+        this.numbersArray = Arrays.copyOf(numbersArray, numbersArray.length);
     }
 
     // Вектор из массива, с размером
     public Vector(int size, double[] numbers) {
-        this.numbers = new double[size];
-        // переопределим размер по минимальной длине
-        size = Math.min(size, numbers.length);
-        // ленивый способ
-        System.arraycopy(numbers, 0, this.numbers, 0, size);
-
-        /* Warning на ручное копирование
-        for (int i = 0; i < size; i++) {
-            this.numbers[i] = numbers[i];
-        }
-        */
+        checkSize(size);
+        this.numbersArray = Arrays.copyOf(numbers, size);
     }
 
     @Override
     public String toString() {
         // грех не воспользоваться
-        return Arrays.toString(numbers);
+        return Arrays.toString(numbersArray).replace("[", "{").replace("]", "}");
     }
 
+    // размер вектора
     public int getSize() {
-        return numbers.length;
+        return numbersArray.length;
     }
 
-    public void setNumberByPosition(int position, double number) {
-        if (position < 0 || position > numbers.length) {
-            throw new IllegalArgumentException(String.format("Ошибка ввода! Нет элемента №%d", position));
+    // длина вектора
+    public double getLength() {
+        double length = 0;
+
+        for (double number : numbersArray) {
+            length += number * number;
         }
 
-        numbers[position] = number;
+        return Math.sqrt(length);
     }
 
-    public double getNumberByPosition(int position) {
-        if (position < 0 || position > numbers.length) {
-            throw new IllegalArgumentException(String.format("Ошибка ввода! Нет элемента №%d", position));
+    public double getArrayNumberByIndex(int index) {
+        int maxIndex = numbersArray.length - 1;
+        if (index < 0 || index > maxIndex) {
+            throw new ArrayIndexOutOfBoundsException(String.format("Ошибка ввода! Индекс может быть в диапазоне [0, %d], вы ввели %d", maxIndex, index));
         }
 
-        return numbers[position];
+        return numbersArray[index];
+    }
+
+    public void setArrayNumberByIndex(int index, double number) {
+        int maxIndex = numbersArray.length - 1;
+        if (index < 0 || index > maxIndex) {
+            throw new ArrayIndexOutOfBoundsException(String.format("Ошибка ввода! Индекс может быть в диапазоне [0, %d], вы ввели %d", maxIndex, index));
+        }
+
+        numbersArray[index] = number;
     }
 
     // разворот
     public void reverse() {
-        for (int i = 0; i < numbers.length; i++) {
-            this.numbers[i] *= -1;
-        }
+        multiply(-1);
     }
 
     public void add(Vector vector) {
-        for (int i = 0; i < numbers.length; i++) {
-            if (i == vector.numbers.length) {
-                break;
+        if (numbersArray.length < vector.numbersArray.length) {
+            numbersArray = Arrays.copyOf(numbersArray, vector.numbersArray.length);
+        }
+
+        for (int i = 0; i < numbersArray.length; i++) {
+            if (i == vector.numbersArray.length) {
+                return;
             }
 
-            numbers[i] += vector.numbers[i];
+            numbersArray[i] += vector.numbersArray[i];
         }
     }
 
     public void subtract(Vector vector) {
-        for (int i = 0; i < numbers.length; i++) {
-            if (i == vector.numbers.length) {
-                break;
+        if (numbersArray.length < vector.numbersArray.length) {
+            numbersArray = Arrays.copyOf(numbersArray, vector.numbersArray.length);
+        }
+
+        for (int i = 0; i < numbersArray.length; i++) {
+            if (i == vector.numbersArray.length) {
+                return;
             }
 
-            numbers[i] -= vector.numbers[i];
+            numbersArray[i] -= vector.numbersArray[i];
         }
     }
 
-    public void multiplication(double n) {
-        for (int i = 0; i < numbers.length; i++) {
-            numbers[i] *= n;
+    public void multiply(double scalar) {
+        for (int i = 0; i < numbersArray.length; i++) {
+            numbersArray[i] *= scalar;
         }
     }
 
@@ -102,7 +111,7 @@ public class Vector {
         final int prime = 11;
 
         int hash = 1;
-        hash = prime * hash + Arrays.hashCode(numbers);
+        hash = prime * hash + Arrays.hashCode(numbersArray);
 
         return hash;
     }
@@ -120,82 +129,46 @@ public class Vector {
         }
 
         // привели класс
-        Vector vectorObject = (Vector) object;
+        Vector vector = (Vector) object;
         // проверили равенство ссылок и полей, спец методом
-        return Arrays.compare(vectorObject.numbers, numbers) == 0;
+        return Arrays.equals(vector.numbersArray, numbersArray);
     }
 
     private static void checkSize(int size) {
         if (size <= 0) {
-            throw new IllegalArgumentException(String.format("Ошибка ввода! Нельзя создать вектор с размером %d!", size));
+            throw new IllegalArgumentException(String.format("Ошибка ввода! Размер вектора должен быть больше нуля [Вы ввели %d]!", size));
         }
     }
 
-    public static Vector getAddition(Vector vector1, Vector vector2) {
+    public static Vector getSum(Vector vector1, Vector vector2) {
         int newSize = Math.max(vector1.getSize(), vector2.getSize());
         Vector newVector = new Vector(newSize);
-        double number;
-
-        for (int i = 0; i < newSize; i++) {
-            number = 0;
-
-            if (i < vector1.getSize()) {
-                number += vector1.getNumberByPosition(i);
-            }
-
-            if (i < vector2.getSize()) {
-                number += vector2.getNumberByPosition(i);
-            }
-
-            newVector.setNumberByPosition(i, number);
-        }
+        // прибавили в пустой вектор 1
+        newVector.add(vector1);
+        // прибавили в пустой вектор 2
+        newVector.add(vector2);
 
         return newVector;
     }
 
-    public static Vector getSubtraction(Vector vector1, Vector vector2) {
+    public static Vector geDifference(Vector vector1, Vector vector2) {
         int newSize = Math.max(vector1.getSize(), vector2.getSize());
         Vector newVector = new Vector(newSize);
-        double number;
 
-        for (int i = 0; i < newSize; i++) {
-            if (i < vector1.getSize()) {
-                number = vector1.getNumberByPosition(i);
-            } else {
-                number = 0;
-            }
-
-            if (i < vector2.getSize()) {
-                number -= vector2.getNumberByPosition(i);
-            }
-
-            newVector.setNumberByPosition(i, number);
-        }
+        newVector.add(vector1);
+        newVector.subtract(vector2);
 
         return newVector;
     }
 
-    public static Vector getMultiplication(Vector vector1, Vector vector2) {
-        int newSize = Math.max(vector1.getSize(), vector2.getSize());
-        Vector newVector = new Vector(newSize);
-        double number;
+    public static double getProduct(Vector vector1, Vector vector2) {
+        double result = 0;
+        int minSize = Math.min(vector1.numbersArray.length, vector2.numbersArray.length);
 
-        for (int i = 0; i < newSize; i++) {
-            if (i < vector1.getSize()) {
-                number = vector1.getNumberByPosition(i);
-            } else {
-                number = 0;
-            }
-
-            if (i < vector2.getSize()) {
-                number *= vector2.getNumberByPosition(i);
-            } else {
-                number = 0;
-            }
-
-            newVector.setNumberByPosition(i, number);
+        for (int i = 0; i < minSize; i++) {
+            result += vector1.numbersArray[i] * vector2.numbersArray[i];
         }
 
-        return newVector;
+        return result;
     }
 }
