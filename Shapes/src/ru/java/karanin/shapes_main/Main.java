@@ -5,7 +5,6 @@ import ru.java.karanin.shapes_comparators.ShapeAreaComparator;
 import ru.java.karanin.shapes_comparators.ShapePerimeterComparator;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 public class Main {
     public static void main(String[] args) {
@@ -28,10 +27,12 @@ public class Main {
         // отсортировали по площади
         // дичь с Collections.reverseOrder почему просто не сделать параметр - порядок сортировки в Sort
         // полечить можно заменив 1 элемент на последний
-        Arrays.sort(shapes, Collections.reverseOrder(new ShapeAreaComparator()));
+        // альтернатива отдать в компаратор Collections.reverseOrder(new ShapeAreaComparator())
+        Arrays.sort(shapes, new ShapeAreaComparator().reversed());
+
         // фигура с индексом 0 имеет самую большую площадь
         System.out.println();
-        System.out.println("Фигура с самой большой площадью: " + shapes[0].toString());
+        System.out.println("Фигура с самой большой площадью: " + shapes[0]);
         System.out.printf("Высота этой фигуры: %.2f%n", shapes[0].getHeight());
         System.out.println("Сортировка по площади:");
 
@@ -42,9 +43,7 @@ public class Main {
 
         // вторая фигура по размеру периметра
         // отсортировали по периметру
-        // дичь с Collections.reverseOrder почему просто не сделать параметр - порядок сортировки в Sort
-        // полечить можно заменив 1 элемент на последний
-        Arrays.sort(shapes, Collections.reverseOrder(new ShapePerimeterComparator()));
+        Arrays.sort(shapes, new ShapePerimeterComparator().reversed());
         // фигура с индексом 1 имеет второй по размеру периметр
         System.out.println();
         System.out.println("Вторая фигура по размеру периметра: " + shapes[1]);
@@ -82,4 +81,3 @@ public class Main {
         }
     }
 }
-

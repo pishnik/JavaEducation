@@ -37,7 +37,7 @@ public class Circle implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Круг c радиусом %.2f [S=%.2f P=%.2f]", getRadius(), getArea(), getPerimeter());
+        return String.format("Круг c радиусом %.2f [S=%.2f P=%.2f]", radius, getArea(), getPerimeter());
     }
 
     @Override

@@ -9,24 +9,24 @@ public class Rectangle implements Shape {
         this.height = height;
     }
 
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
     // Ширина
     @Override
     public double getWidth() {
         return width;
     }
 
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
     // Высота
     @Override
     public double getHeight() {
         return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     // Площадь
@@ -42,12 +42,13 @@ public class Rectangle implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Прямоугольник c высотой %.2f и шириной %.2f [S=%.2f P=%.2f]", getHeight(), getWidth(), getArea(), getPerimeter());
+        return String.format("Прямоугольник c высотой %.2f и шириной %.2f [S=%.2f P=%.2f]", height, width, getArea(), getPerimeter());
     }
 
     @Override
     public int hashCode() {
         final int prime = 11;
+
         int hash = 1;
         hash = prime * hash + Double.hashCode(width);
         hash = prime * hash + Double.hashCode(height);
@@ -68,6 +69,6 @@ public class Rectangle implements Shape {
         // привели класс
         Rectangle rectangle = (Rectangle) object;
 
-        return (width == rectangle.width && height == rectangle.height);
+        return width == rectangle.width && height == rectangle.height;
     }
 }
