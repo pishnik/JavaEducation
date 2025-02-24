@@ -33,7 +33,6 @@ public class Triangle implements Shape {
         this.y1 = y1;
     }
 
-
     public double getX2() {
         return x2;
     }

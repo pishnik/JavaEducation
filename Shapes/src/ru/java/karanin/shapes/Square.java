@@ -40,7 +40,7 @@ public class Square implements Shape {
 
     @Override
     public String toString() {
-        return String.format("Квадрат со стороной %.2f [S=%.2f P=%.2f]", getSideLength(), getArea(), getPerimeter());
+        return String.format("Квадрат со стороной %.2f [S=%.2f P=%.2f]", sideLength, getArea(), getPerimeter());
     }
 
     @Override
