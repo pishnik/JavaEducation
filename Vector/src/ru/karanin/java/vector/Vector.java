@@ -3,68 +3,80 @@ package ru.karanin.java.vector;
 import java.util.Arrays;
 
 public class Vector {
-    private double[] numbersArray;
+    private double[] components;
 
     public Vector(int size) {
         checkSize(size);
-        numbersArray = new double[size];
+        components = new double[size];
     }
 
     // Вектор из вектора
     public Vector(Vector vector) {
-        numbersArray = Arrays.copyOf(vector.numbersArray, vector.numbersArray.length);
+        components = Arrays.copyOf(vector.components, vector.components.length);
     }
 
     // Вектор из массива
-    public Vector(double[] numbersArray) {
-        checkSize(numbersArray.length);
-        this.numbersArray = Arrays.copyOf(numbersArray, numbersArray.length);
+    public Vector(double[] components) {
+        checkSize(components.length);
+        this.components = Arrays.copyOf(components, components.length);
     }
 
     // Вектор из массива, с размером
-    public Vector(int size, double[] numbers) {
+    public Vector(int size, double[] components) {
         checkSize(size);
-        this.numbersArray = Arrays.copyOf(numbers, size);
+        this.components = Arrays.copyOf(components, size);
     }
 
     @Override
     public String toString() {
-        // грех не воспользоваться
-        return Arrays.toString(numbersArray).replace("[", "{").replace("]", "}");
+        StringBuilder stringBuilder = new StringBuilder("{");
+
+        for (int i = 0; i < components.length - 1; i++) {
+            stringBuilder.append(components[i]);
+            stringBuilder.append(", ");
+        }
+
+        stringBuilder.append(components[components.length - 1]);
+
+        stringBuilder.append("}");
+
+        return stringBuilder.toString();
     }
 
     // размер вектора
     public int getSize() {
-        return numbersArray.length;
+        return components.length;
     }
 
     // длина вектора
-    public double getLength() {
+    public double getMagnitude() {
         double length = 0;
 
-        for (double number : numbersArray) {
+        for (double number : components) {
             length += number * number;
         }
 
         return Math.sqrt(length);
     }
 
-    public double getArrayNumberByIndex(int index) {
-        int maxIndex = numbersArray.length - 1;
+    public double getComponentByIndex(int index) {
+        int maxIndex = components.length - 1;
+
         if (index < 0 || index > maxIndex) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Ошибка ввода! Индекс может быть в диапазоне [0, %d], вы ввели %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс может быть в диапазоне [0, %d], введено %d", maxIndex, index));
         }
 
-        return numbersArray[index];
+        return components[index];
     }
 
-    public void setArrayNumberByIndex(int index, double number) {
-        int maxIndex = numbersArray.length - 1;
+    public void setComponentByIndex(int index, double number) {
+        int maxIndex = components.length - 1;
+
         if (index < 0 || index > maxIndex) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Ошибка ввода! Индекс может быть в диапазоне [0, %d], вы ввели %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс может быть в диапазоне [0, %d], введено %d", maxIndex, index));
         }
 
-        numbersArray[index] = number;
+        components[index] = number;
     }
 
     // разворот
@@ -73,36 +85,28 @@ public class Vector {
     }
 
     public void add(Vector vector) {
-        if (numbersArray.length < vector.numbersArray.length) {
-            numbersArray = Arrays.copyOf(numbersArray, vector.numbersArray.length);
+        if (components.length < vector.components.length) {
+            components = Arrays.copyOf(components, vector.components.length);
         }
 
-        for (int i = 0; i < numbersArray.length; i++) {
-            if (i == vector.numbersArray.length) {
-                return;
-            }
-
-            numbersArray[i] += vector.numbersArray[i];
+        for (int i = 0; i < vector.components.length; i++) {
+            components[i] += vector.components[i];
         }
     }
 
     public void subtract(Vector vector) {
-        if (numbersArray.length < vector.numbersArray.length) {
-            numbersArray = Arrays.copyOf(numbersArray, vector.numbersArray.length);
+        if (components.length < vector.components.length) {
+            components = Arrays.copyOf(components, vector.components.length);
         }
 
-        for (int i = 0; i < numbersArray.length; i++) {
-            if (i == vector.numbersArray.length) {
-                return;
-            }
-
-            numbersArray[i] -= vector.numbersArray[i];
+        for (int i = 0; i < vector.components.length; i++) {
+            components[i] -= vector.components[i];
         }
     }
 
     public void multiply(double scalar) {
-        for (int i = 0; i < numbersArray.length; i++) {
-            numbersArray[i] *= scalar;
+        for (int i = 0; i < components.length; i++) {
+            components[i] *= scalar;
         }
     }
 
@@ -111,7 +115,7 @@ public class Vector {
         final int prime = 11;
 
         int hash = 1;
-        hash = prime * hash + Arrays.hashCode(numbersArray);
+        hash = prime * hash + Arrays.hashCode(components);
 
         return hash;
     }
@@ -131,42 +135,41 @@ public class Vector {
         // привели класс
         Vector vector = (Vector) object;
         // проверили равенство ссылок и полей, спец методом
-        return Arrays.equals(vector.numbersArray, numbersArray);
+        return Arrays.equals(vector.components, components);
     }
 
     private static void checkSize(int size) {
         if (size <= 0) {
-            throw new IllegalArgumentException(String.format("Ошибка ввода! Размер вектора должен быть больше нуля [Вы ввели %d]!", size));
+            throw new IllegalArgumentException(String.format("Размер вектора должен быть больше нуля [Введено %d]", size));
         }
     }
 
     public static Vector getSum(Vector vector1, Vector vector2) {
-        int newSize = Math.max(vector1.getSize(), vector2.getSize());
-        Vector newVector = new Vector(newSize);
-        // прибавили в пустой вектор 1
-        newVector.add(vector1);
+        int newSize = Math.max(vector1.components.length, vector2.components.length);
+        // в новый вектор записали вектор 1
+        Vector resultVector = new Vector(newSize, vector1.components);
         // прибавили в пустой вектор 2
-        newVector.add(vector2);
+        resultVector.add(vector2);
 
-        return newVector;
+        return resultVector;
     }
 
-    public static Vector geDifference(Vector vector1, Vector vector2) {
-        int newSize = Math.max(vector1.getSize(), vector2.getSize());
-        Vector newVector = new Vector(newSize);
+    public static Vector getDifference(Vector vector1, Vector vector2) {
+        int newSize = Math.max(vector1.components.length, vector2.components.length);
+        // в новый вектор записали вектор 1
+        Vector resultVector = new Vector(newSize, vector1.components);
+        // отняли от результата вектор 2
+        resultVector.subtract(vector2);
 
-        newVector.add(vector1);
-        newVector.subtract(vector2);
-
-        return newVector;
+        return resultVector;
     }
 
-    public static double getProduct(Vector vector1, Vector vector2) {
+    public static double getScalarProduct(Vector vector1, Vector vector2) {
+        int minSize = Math.min(vector1.components.length, vector2.components.length);
         double result = 0;
-        int minSize = Math.min(vector1.numbersArray.length, vector2.numbersArray.length);
 
         for (int i = 0; i < minSize; i++) {
-            result += vector1.numbersArray[i] * vector2.numbersArray[i];
+            result += vector1.components[i] * vector2.components[i];
         }
 
         return result;

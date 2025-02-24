@@ -29,7 +29,7 @@ public class Main {
         Vector vector2 = new Vector(userArray1);
         System.out.println("Вектор 2 из массива: " + vector2);
 
-        vector2.setArrayNumberByIndex(0, Math.floor(random.nextDouble() * 10000) / 100);
+        vector2.setComponentByIndex(0, Math.floor(random.nextDouble() * 10000) / 100);
         Vector vector3 = new Vector(vector2);
         System.out.println("Вектор 3 из вектора 2 (с подменой 0 элемента): " + vector3);
 
@@ -37,12 +37,12 @@ public class Main {
         System.out.println("Вектор 4: " + vector4);
         Vector vector5 = new Vector(userArray1.length - 2, userArray1);
         System.out.println("Вектор 5: " + vector5);
-        System.out.printf("В векторе 5, на позиции 0: %.2f%n", vector5.getArrayNumberByIndex(0));
+        System.out.printf("В векторе 5, на позиции 0: %.2f%n", vector5.getComponentByIndex(0));
 
         System.out.print("Введите индекс элемента: ");
         int index = scanner.nextInt();
 
-        System.out.printf("В векторе 5, на позиции %d : %.2f%n", index, vector5.getArrayNumberByIndex(index));
+        System.out.printf("В векторе 5, на позиции %d : %.2f%n", index, vector5.getComponentByIndex(index));
 
         if (vector2.equals(vector3)) {
             System.out.println("Вектор 2: " + vector2 + " и вектор 3: " + vector3 + " равны!");
@@ -94,17 +94,17 @@ public class Main {
         Vector vector11 = Vector.getSum(vector9, vector10);
         System.out.println("Вектор 11: " + vector11);
 
-        Vector vector12 = Vector.geDifference(vector9, vector10);
+        Vector vector12 = Vector.getDifference(vector9, vector10);
         System.out.println("Вектор 12: " + vector12);
-        System.out.printf("Длина вектора 12: %.2f%n", vector12.getLength());
+        System.out.printf("Длина вектора 12: %.2f%n", vector12.getMagnitude());
 
-        double scalarProduct = Vector.getProduct(vector9, vector10);
+        double scalarProduct = Vector.getScalarProduct(vector9, vector10);
         System.out.printf("Скалярное произведение вектора 9 и 10: %.2f%n", scalarProduct);
 
         Vector vector14 = new Vector(new double[]{1, 2, 3});
         Vector vector15 = new Vector(new double[]{1, 2, 3, 4, 5});
         System.out.println("Вектор 16: " + Vector.getSum(vector14, vector15));
-        System.out.println("Вектор 17: " + Vector.geDifference(vector14, vector15));
-        System.out.println("Вектор 18: " + Vector.getProduct(vector14, vector15));
+        System.out.println("Вектор 17: " + Vector.getDifference(vector14, vector15));
+        System.out.println("Вектор 18: " + Vector.getScalarProduct(vector14, vector15));
     }
 }
