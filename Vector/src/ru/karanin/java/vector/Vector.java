@@ -32,13 +32,12 @@ public class Vector {
         StringBuilder stringBuilder = new StringBuilder("{");
 
         for (int i = 0; i < components.length - 1; i++) {
-            stringBuilder.append(components[i]);
-            stringBuilder.append(", ");
+            stringBuilder.append(components[i]).append(", ");
         }
 
         stringBuilder.append(components[components.length - 1]);
 
-        stringBuilder.append("}");
+        stringBuilder.append('}');
 
         return stringBuilder.toString();
     }
@@ -49,34 +48,34 @@ public class Vector {
     }
 
     // длина вектора
-    public double getMagnitude() {
-        double length = 0;
+    public double getLength() {
+        double componentSquaresSum = 0;
 
-        for (double number : components) {
-            length += number * number;
+        for (double component : components) {
+            componentSquaresSum += component * component;
         }
 
-        return Math.sqrt(length);
+        return Math.sqrt(componentSquaresSum);
     }
 
     public double getComponentByIndex(int index) {
         int maxIndex = components.length - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new IndexOutOfBoundsException(String.format("Индекс может быть в диапазоне [0, %d], введено %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано %d", maxIndex, index));
         }
 
         return components[index];
     }
 
-    public void setComponentByIndex(int index, double number) {
+    public void setComponentByIndex(int index, double component) {
         int maxIndex = components.length - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new IndexOutOfBoundsException(String.format("Индекс может быть в диапазоне [0, %d], введено %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано %d", maxIndex, index));
         }
 
-        components[index] = number;
+        components[index] = component;
     }
 
     // разворот
@@ -140,14 +139,14 @@ public class Vector {
 
     private static void checkSize(int size) {
         if (size <= 0) {
-            throw new IllegalArgumentException(String.format("Размер вектора должен быть больше нуля [Введено %d]", size));
+            throw new IllegalArgumentException(String.format("Размер вектора должен быть больше нуля, передано %d", size));
         }
     }
 
     public static Vector getSum(Vector vector1, Vector vector2) {
-        int newSize = Math.max(vector1.components.length, vector2.components.length);
+        int resultSize = Math.max(vector1.components.length, vector2.components.length);
         // в новый вектор записали вектор 1
-        Vector resultVector = new Vector(newSize, vector1.components);
+        Vector resultVector = new Vector(resultSize, vector1.components);
         // прибавили в пустой вектор 2
         resultVector.add(vector2);
 
@@ -155,9 +154,9 @@ public class Vector {
     }
 
     public static Vector getDifference(Vector vector1, Vector vector2) {
-        int newSize = Math.max(vector1.components.length, vector2.components.length);
+        int resultSize = Math.max(vector1.components.length, vector2.components.length);
         // в новый вектор записали вектор 1
-        Vector resultVector = new Vector(newSize, vector1.components);
+        Vector resultVector = new Vector(resultSize, vector1.components);
         // отняли от результата вектор 2
         resultVector.subtract(vector2);
 
@@ -166,6 +165,7 @@ public class Vector {
 
     public static double getScalarProduct(Vector vector1, Vector vector2) {
         int minSize = Math.min(vector1.components.length, vector2.components.length);
+
         double result = 0;
 
         for (int i = 0; i < minSize; i++) {
