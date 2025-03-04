@@ -29,16 +29,14 @@ public class Vector {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder().append('{');
+        StringBuilder stringBuilder = new StringBuilder("{");
 
         for (int i = 0; i < components.length - 1; i++) {
             // тут 2 append для запятой и пробела кажутся перебором
             stringBuilder.append(components[i]).append(", ");
         }
 
-        stringBuilder.append(components[components.length - 1]);
-
-        stringBuilder.append('}');
+        stringBuilder.append(components[components.length - 1]).append('}');
 
         return stringBuilder.toString();
     }
