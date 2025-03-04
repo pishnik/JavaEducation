@@ -12,12 +12,28 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Random random = new Random();
         System.out.println("Работа со списком!");
 
-        // блоки ДЗ = отдельные методы
+        // список из файла
         readFileToArrayList();
-        removeEvenNumbersFromArrayList();
-        removeDoublesFromArrayList();
+
+        // список без четных чисел
+        ArrayList<Integer> numbers1 = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            numbers1.add(random.nextInt(100) + 1);
+        }
+
+        System.out.println("Список содержит: " + numbers1);
+        removeEvenNumbersFromArrayList(numbers1);
+        System.out.println("Список без четных чисел: " + numbers1);
+
+        // список без повторов
+        ArrayList<Integer> numbers2 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 4, 2, 2, 3, 4, 5, 9, 11, 10));
+        System.out.println("Список c повторами: " + numbers2);
+
+        ArrayList<Integer> numbers3 = getArrayListWithNoRepeats(numbers2);
+        System.out.println("Список без повторов: " + numbers3);
     }
 
     public static void readFileToArrayList() {
@@ -26,7 +42,7 @@ public class Main {
         System.out.print("Введите имя файла (путь к файлу): ");
         String filePath = scanner.nextLine();
 
-        try (FileReader fileReader = new FileReader(filePath); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             ArrayList<String> fileLines = new ArrayList<>();
 
             String line;
@@ -39,44 +55,30 @@ public class Main {
             // выводим строки
             System.out.println(fileLines);
         } catch (FileNotFoundException e) {
-            System.out.printf("Файл %s не найден", filePath);
+            System.out.printf("Файл %s не найден%n", filePath);
         } catch (IOException e) {
             // сомнительный перехват, а что там может сломаться?
             System.out.println("При обработке файла произошла ошибка: " + e.getMessage());
         }
     }
 
-    public static void removeEvenNumbersFromArrayList() {
-        Random random = new Random();
-        ArrayList<Integer> numbers = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            numbers.add(random.nextInt(100) + 1);
-        }
-
-        System.out.println("Список содержит: " + numbers);
-
+    public static void removeEvenNumbersFromArrayList(ArrayList<Integer> numbers) {
         for (int i = numbers.size() - 1; i >= 0; i--) {
             if (numbers.get(i) % 2 == 0) {
                 numbers.remove(i);
             }
         }
-
-        System.out.println("Список без четных чисел: " + numbers);
     }
 
-    public static void removeDoublesFromArrayList() {
-        ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 4, 2, 2, 3, 4, 5, 9, 11, 10));
-        System.out.println("Список c повторами: " + numbers);
-
-        ArrayList<Integer> numbersWithoutDoubles = new ArrayList<>();
+    public static ArrayList<Integer> getArrayListWithNoRepeats(ArrayList<Integer> numbers) {
+        ArrayList<Integer> numbersWithNoRepeats = new ArrayList<>(numbers.size());
 
         for (Integer number : numbers) {
-            if (!numbersWithoutDoubles.contains(number)) {
-                numbersWithoutDoubles.add(number);
+            if (!numbersWithNoRepeats.contains(number)) {
+                numbersWithNoRepeats.add(number);
             }
         }
 
-        System.out.println("Список без  повторов: " + numbersWithoutDoubles);
+        return numbersWithNoRepeats;
     }
 }
