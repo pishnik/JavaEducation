@@ -29,9 +29,10 @@ public class Vector {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("{");
+        StringBuilder stringBuilder = new StringBuilder().append('{');
 
         for (int i = 0; i < components.length - 1; i++) {
+            // тут 2 append для запятой и пробела кажутся перебором
             stringBuilder.append(components[i]).append(", ");
         }
 
@@ -49,20 +50,20 @@ public class Vector {
 
     // длина вектора
     public double getLength() {
-        double componentSquaresSum = 0;
+        double componentsSquaresSum = 0;
 
         for (double component : components) {
-            componentSquaresSum += component * component;
+            componentsSquaresSum += component * component;
         }
 
-        return Math.sqrt(componentSquaresSum);
+        return Math.sqrt(componentsSquaresSum);
     }
 
     public double getComponentByIndex(int index) {
         int maxIndex = components.length - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
 
         return components[index];
@@ -72,7 +73,7 @@ public class Vector {
         int maxIndex = components.length - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
 
         components[index] = component;
@@ -139,7 +140,7 @@ public class Vector {
 
     private static void checkSize(int size) {
         if (size <= 0) {
-            throw new IllegalArgumentException(String.format("Размер вектора должен быть больше нуля, передано %d", size));
+            throw new IllegalArgumentException(String.format("Размер вектора должен быть больше нуля, передано значение %d", size));
         }
     }
 
