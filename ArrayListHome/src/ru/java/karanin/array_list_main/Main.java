@@ -12,11 +12,20 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         Random random = new Random();
+
         System.out.println("Работа со списком!");
 
         // список из файла
-        readFileToArrayList();
+        System.out.print("Введите имя файла (путь к файлу): ");
+        String filePath = scanner.nextLine();
+
+        ArrayList<String> fileLines = readFileToArrayList(filePath);
+
+        if (!fileLines.isEmpty()) {
+            System.out.println("Строки файла: " + fileLines);
+        }
 
         // список без четных чисел
         ArrayList<Integer> numbers1 = new ArrayList<>(10);
@@ -36,30 +45,28 @@ public class Main {
         System.out.println("Список без повторов: " + numbers3);
     }
 
-    public static void readFileToArrayList() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Введите имя файла (путь к файлу): ");
-        String filePath = scanner.nextLine();
+    public static ArrayList<String> readFileToArrayList(String filePath) {
+        // Мы должны выполнить загрузку, но можем сломаться.
+        // Функция требует return, технически мы ловим слом и превращаем ситуацию в штатную,
+        // но что-то должны вернуть в случаем слома, пусть будем возвращать пустой список.
+        // Для этого объявим его в начале и в самом конце сделаем return
+        // (что бы плодить return в catch)
+        ArrayList<String> fileLines = new ArrayList<>();
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
-            ArrayList<String> fileLines = new ArrayList<>();
-
             String line;
 
             // читаем пока читается и добавляем в список строки
             while ((line = bufferedReader.readLine()) != null) {
                 fileLines.add(line);
             }
-
-            // выводим строки
-            System.out.println(fileLines);
         } catch (FileNotFoundException e) {
             System.out.printf("Файл %s не найден%n", filePath);
         } catch (IOException e) {
-            // сомнительный перехват, а что там может сломаться?
             System.out.println("При обработке файла произошла ошибка: " + e.getMessage());
         }
+
+        return fileLines;
     }
 
     public static void removeEvenNumbersFromArrayList(ArrayList<Integer> numbers) {
