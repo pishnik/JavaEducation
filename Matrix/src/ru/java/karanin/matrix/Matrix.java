@@ -8,22 +8,22 @@ public class Matrix {
     private Vector[] rows;
 
     // по размерам
-    public Matrix(int n, int m) {
+    public Matrix(int rowsCount, int columnsCount) {
         // проверяем аргументы
-        if (n <= 0) {
-            throw new IllegalArgumentException(String.format("Количество строк матрицы должно быть больше нуля, введено %d", n));
+        if (rowsCount <= 0) {
+            throw new IllegalArgumentException(String.format("Количество строк матрицы должно быть больше нуля, передано значение %d", rowsCount));
         }
 
-        if (m <= 0) {
-            throw new IllegalArgumentException(String.format("Количество элементов строки матрицы должно быть больше нуля, введено %d", m));
+        if (columnsCount <= 0) {
+            throw new IllegalArgumentException(String.format("Количество столбцов матрицы должно быть больше нуля, передано значение %d", columnsCount));
         }
 
         // создаем
-        rows = new Vector[m];
+        rows = new Vector[rowsCount];
 
         // заполнили массив векторами
-        for (int i = 0; i < m; i++) {
-            rows[i] = new Vector(m);
+        for (int i = 0; i < rowsCount; i++) {
+            rows[i] = new Vector(columnsCount);
         }
     }
 
@@ -39,43 +39,91 @@ public class Matrix {
 
     // из двумерного массива чисел
     public Matrix(double[][] numbersArray) {
+        // проверяем размеры
+        if (numbersArray.length == 0) {
+            throw new IllegalArgumentException(String.format("Количество строк матрицы должно быть больше нуля, передано значение %d", numbersArray.length));
+        }
+
+        // а тут засада numbersArray[0].length == 0 не катит, так как у других массивов могут быть элементы
+        int arrayMaxSize = 0;
+
+        for (double[] array : numbersArray) {
+            if (array.length > arrayMaxSize) {
+                arrayMaxSize = array.length;
+            }
+        }
+
+        // проверяем что там
+        if (arrayMaxSize == 0) {
+            throw new IllegalArgumentException(String.format("Количество столбцов матрицы должно быть больше нуля, передано значение %d", numbersArray[0].length));
+        }
+
         rows = new Vector[numbersArray.length];
 
         for (int i = 0; i < numbersArray.length; i++) {
-            rows[i] = new Vector(numbersArray[i]);
+            rows[i] = new Vector(arrayMaxSize, numbersArray[i]);
         }
     }
 
     // из массива векторов-строк
     public Matrix(Vector[] vectorsArray) {
         // копируем в массив векторов сами векторы
-        rows = Arrays.copyOf(vectorsArray, vectorsArray.length);
+        if (vectorsArray.length == 0) {
+            throw new IllegalArgumentException(String.format("Количество строк матрицы должно быть больше нуля, передано значение %d", vectorsArray.length));
+        }
+
+        // проверять длину векторов не нужно, там всегда больше ноля,
+        // но максимальную надо посчитать
+        int maxVectorSize = 0;
+
+        for (Vector vector : vectorsArray) {
+            if (vector.getSize() > maxVectorSize) {
+                maxVectorSize = vector.getSize();
+            }
+        }
+
+        rows = new Vector[vectorsArray.length];
+
+        for (int i = 0; i < vectorsArray.length; i++) {
+            // метода добивки вектора нет, пойдем через массив - пробегаем по вектору, собираем массив
+            double[] tempArray = new double[vectorsArray[i].getSize()];
+
+            for (int j = 0; j < vectorsArray[i].getSize(); j++) {
+                tempArray[j] = vectorsArray[i].getComponentByIndex(j);
+            }
+
+            rows[i] = new Vector(maxVectorSize, tempArray);
+        }
     }
 
-    // из массива векторов-строк
-    public String getSize() {
-        return String.format("%dx%d", rows.length, rows[0].getSize());
+    public int getRowsCount() {
+        return rows.length;
+    }
+
+    public int getColumnsCount() {
+        return rows[0].getSize();
     }
 
     public Vector getRowByIndex(int index) {
         int maxIndex = rows.length - 1;
+
         if (index < 0 || index > maxIndex) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Индекс строки должен быть в диапазоне [0, %d], введено %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс строки должен быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
 
-        return rows[index];
+        return new Vector(rows[index]);
     }
 
     public void setRowByIndex(int index, Vector vector) {
         int maxIndex = rows.length - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Индекс строки должен быть в диапазоне [0, %d], введено %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс строки должен быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
 
         // важно что бы размеры векторов совпадали
         if (vector.getSize() != rows[index].getSize()) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Размер вектора [%d] не совпадает с размеров строки в матрице [%d]!", vector.getSize(), rows[index].getSize()));
+            throw new IllegalArgumentException(String.format("Количество элементов вектора [%d] не совпадает с количество столбцов в матрице [%d]!", vector.getSize(), rows[index].getSize()));
         }
 
         // новый вектор созданный из переданного
@@ -87,10 +135,10 @@ public class Matrix {
     }
 
     public Vector getColumnByIndex(int index) {
-        int maxIndex = rows[0].getSize() - 1;
+        int maxIndex = getColumnsCount() - 1;
 
         if (index < 0 || index > maxIndex) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], введено %d", maxIndex, index));
+            throw new IndexOutOfBoundsException(String.format("Индекс должен быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
 
         double[] numbers = new double[rows.length];
@@ -107,59 +155,38 @@ public class Matrix {
         StringBuilder stringBuilder = new StringBuilder("{");
 
         for (int i = 0; i < rows.length - 1; i++) {
-            stringBuilder.append(rows[i]);
-            stringBuilder.append(", ");
+            stringBuilder.append(rows[i]).append(", ");
         }
 
-        stringBuilder.append(rows[rows.length - 1]);
-        stringBuilder.append("}");
+        stringBuilder.append(rows[rows.length - 1]).append('}');
 
         return stringBuilder.toString();
     }
 
-    // метод для вывода по строкам
-    public void print() {
-        for (Vector element : rows) {
-            System.out.println(element);
-        }
-    }
-
     // транспонирование
     public void transpose() {
-        // запоминаем исходные размеры
-        int n = rows.length;
-        int m = rows[0].getSize();
-        // создаем темповый массив векторов, на него потом заменим оригинал
-        Vector[] tempRows = new Vector[m];
+        // по количеству столбцов
+        Vector[] newRows = new Vector[getColumnsCount()];
 
-        for (int j = 0; j < m; j++) {
-            // для создания вектора берем новый массив чисел
-            double[] tempArray = new double[n];
-
-            // заполняем массив
-            for (int i = 0; i < n; i++) {
-                tempArray[i] = rows[i].getComponentByIndex(j);
-            }
-
-            // кладем новый вектор в массив
-            tempRows[j] = new Vector(tempArray);
+        // столбцы пишем в строки
+        for (int i = 0; i < getColumnsCount(); i++) {
+            newRows[i] = getColumnByIndex(i);
         }
 
-        // перебили массив
-        rows = tempRows;
+        rows = newRows;
     }
 
     // умножение на скаляр
     public void multiplyByScalar(double scalar) {
-        for (Vector element : rows) {
-            element.multiply(scalar);
+        for (Vector vector : rows) {
+            vector.multiply(scalar);
         }
     }
 
     // умножение на вектор
     public Vector multiplyByVector(Vector vector) {
-        if (vector.getSize() != rows[0].getSize()) {
-            throw new IllegalArgumentException(String.format("Размер вектора [%d] должен совпадать с размером строки матрицы [%d]", vector.getSize(), rows[0].getSize()));
+        if (vector.getSize() != getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("Количество элементов вектора [%d] должно совпадать с количеством столбцов матрицы [%d]", vector.getSize(), rows[0].getSize()));
         }
 
         // массив элементов
@@ -176,11 +203,11 @@ public class Matrix {
     // прибавить
     public void add(Matrix matrix) {
         if (rows.length != matrix.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество строк в прибавляемой матрице (matrix.rows.length = %d) не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
+            throw new IllegalArgumentException(String.format("Количество строк в прибавляемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
         }
 
-        if (rows[0].getSize() != matrix.rows[0].getSize()) {
-            throw new IllegalArgumentException(String.format("Длина строки прибавляемой матрицы (matrix.rows[0].getSize() = %d) не совпадает с длиной строки исходной матрицы %d", matrix.rows[0].getSize(), rows[0].getSize()));
+        if (getColumnsCount() != matrix.getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("Количество столбцов прибавляемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix.getColumnsCount(), getColumnsCount()));
         }
 
         for (int i = 0; i < rows.length; i++) {
@@ -191,11 +218,11 @@ public class Matrix {
     // отнять
     public void subtract(Matrix matrix) {
         if (rows.length != matrix.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество строк в вычитаемой матрице (matrix.rows.length = %d) не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
+            throw new IllegalArgumentException(String.format("Количество строк в вычитаемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
         }
 
-        if (rows[0].getSize() != matrix.rows[0].getSize()) {
-            throw new IllegalArgumentException(String.format("Длина строки вычитаемой матрицы (matrix.rows[0].getSize() = %d) не совпадает с длиной строки исходной матрицы %d", matrix.rows[0].getSize(), rows[0].getSize()));
+        if (getColumnsCount() != matrix.getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("Количество столбцов вычитаемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix.getColumnsCount(), getColumnsCount()));
         }
 
         for (int i = 0; i < rows.length; i++) {
@@ -208,20 +235,20 @@ public class Matrix {
         // создаем минорную матрицу
         int minorLength = rows.length - 1;
         double[][] minor = new double[minorLength][minorLength];
-        //эти переменные для того, чтобы пропускать строку и столбец
-        int ignoredRow = 0;
-        int ignoredColumn;
+        // эти переменные для того, чтобы пропускать строку и столбец
+        int deltaI = 0;
 
         for (int i = 0; i <= minorLength; i++) {
-            ignoredColumn = 0;
+            int deltaJ = 0;
+
             for (int j = 0; j <= minorLength; j++) {
                 if (i == rowIndex) {
-                    ignoredRow = 1;
+                    deltaI = 1;
                 } else {
                     if (j == columnIndex) {
-                        ignoredColumn = 1;
+                        deltaJ = 1;
                     } else {
-                        minor[i - ignoredRow][j - ignoredColumn] = rows[i].getComponentByIndex(j);
+                        minor[i - deltaI][j - deltaJ] = rows[i].getComponentByIndex(j);
                     }
                 }
             }
@@ -232,8 +259,9 @@ public class Matrix {
 
     // определитель
     public double getDeterminant() {
-        if (rows.length != rows[0].getSize()) {
-            throw new IllegalArgumentException("Матрица должна быть квадратной");
+        if (rows.length != getColumnsCount()) {
+            // RuntimeException
+            throw new ArithmeticException(String.format("Количество строк %d не равно количеству столбцов %d, вычисление определителя невозможно", rows.length, getColumnsCount()));
         }
 
         // можно конечно побегать по столбцам и строкам в поисках повторов/пропорций и проверки других свойств определителя, но это выглядит не эффективно
@@ -261,38 +289,86 @@ public class Matrix {
 
     // сложение матриц
     public static Matrix getSum(Matrix matrix1, Matrix matrix2) {
+        checkSizes(matrix1, matrix2);
         Matrix resultMatrix = new Matrix(matrix1);
-
         resultMatrix.add(matrix2);
 
         return resultMatrix;
     }
 
-    //  вычитание матрицы из матрицы
+    // вычитание матрицы из матрицы
     public static Matrix getDifference(Matrix matrix1, Matrix matrix2) {
+        checkSizes(matrix1, matrix2);
         Matrix resultMatrix = new Matrix(matrix1);
-
         resultMatrix.subtract(matrix2);
 
         return resultMatrix;
     }
 
-    // умножение матрицы на матрицу
-    public static Matrix getMultiplyProduct(Matrix matrix1, Matrix matrix2) {
-        if (matrix1.rows[0].getSize() != matrix2.rows.length) {
-            throw new IllegalArgumentException(String.format("Размер строки в первой матрице %d должен совпадать с количеством строк второй матрицы %d", matrix1.rows[0].getSize(), matrix2.rows.length));
+    private static void checkSizes(Matrix matrix1, Matrix matrix2) {
+        if (matrix1.rows.length != matrix2.rows.length) {
+            throw new IllegalArgumentException(String.format("Количество строк в вычитаемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix2.rows.length, matrix1.rows.length));
         }
 
-        double[][] result = new double[matrix1.rows.length][matrix2.rows[0].getSize()];
+        if (matrix1.getColumnsCount() != matrix2.getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("Количество столбцов вычитаемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix2.getColumnsCount(), matrix1.getColumnsCount()));
+        }
+    }
+
+    // умножение матрицы на матрицу
+    public static Matrix getMultiplication(Matrix matrix1, Matrix matrix2) {
+        if (matrix1.getColumnsCount() != matrix2.rows.length) {
+            throw new IllegalArgumentException(String.format("Количество столбцов в первой матрице %d должно совпадать с количеством строк второй матрицы %d", matrix1.rows[0].getSize(), matrix2.rows.length));
+        }
+
+        double[][] result = new double[matrix1.rows.length][matrix2.getColumnsCount()];
 
         for (int i = 0; i < matrix1.rows.length; i++) {
-            for (int j = 0; j < matrix2.rows[0].getSize(); j++) {
+            for (int j = 0; j < matrix2.getColumnsCount(); j++) {
                 result[i][j] = Vector.getScalarProduct(matrix1.rows[i], matrix2.getColumnByIndex(j));
             }
         }
 
         return new Matrix(result);
     }
+
+    // проверка равенства
+    public boolean equals(Object object) {
+        // сам объект
+        if (object == this) {
+            return true;
+        }
+
+        // null или другой класс
+        if (object == null || object.getClass() != getClass()) {
+            return false;
+        }
+
+        // привели класс
+        Matrix matrix = (Matrix) object;
+
+        // размеры проверим
+        if (matrix.rows.length != rows.length || getColumnsCount() != matrix.getColumnsCount()) {
+            return false;
+        }
+
+        // пробежимся по векторам, проверим их содержимое
+        for (int i = 0; i < rows.length; i++) {
+            // если хть один вектор не равен
+            if (!rows[i].equals(matrix.rows[i])) {
+                // выходим - не совпали
+                return false;
+            }
+        }
+
+        // дошли до сюда, все проверки пройдены
+        return true;
+    }
+
+    // хэш
+    @Override
+    public int hashCode() {
+        // воспользуемся базовым методом массивов
+        return Arrays.hashCode(rows);
+    }
 }
-
-
