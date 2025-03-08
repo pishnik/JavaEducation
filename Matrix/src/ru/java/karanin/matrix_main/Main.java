@@ -80,13 +80,13 @@ public class Main {
         System.out.println("Матрица №4 * на ее 0 вектор: " + vector);
 
         // можно и так создать
-        Vector[] vectorsArray2 = new Vector[]{
+        Vector[] vectorsArray2 = {
                 new Vector(new double[]{1, 2, 3}),
                 new Vector(new double[]{4, 5, 5})
         };
         Matrix matrix5 = new Matrix(vectorsArray2);
 
-        Vector[] vectorsArray3 = new Vector[]{
+        Vector[] vectorsArray3 = {
                 new Vector(new double[]{1, 2}),
                 new Vector(new double[]{3, 4}),
                 new Vector(new double[]{5, 6})
@@ -120,7 +120,7 @@ public class Main {
         double determinant = matrix10.getDeterminant();
         System.out.printf("Определитель матрицы №10: %.2f%n", determinant);
 
-        Vector[] vectorArray4 = new Vector[]{
+        Vector[] vectorArray4 = {
                 new Vector(new double[]{1, 2, 3}),
                 new Vector(new double[]{5, 5, 6}),
                 new Vector(new double[]{8, 8, 9})
@@ -138,7 +138,7 @@ public class Main {
         Matrix matrix12 = new Matrix(numbersArray5);
         System.out.println("Матрица №12: " + matrix12);
 
-        Vector[] vectorsArray5 = new Vector[]{
+        Vector[] vectorsArray5 = {
                 new Vector(new double[]{1}),
                 new Vector(new double[]{2, 3}),
                 new Vector(new double[]{4, 5, 6})
