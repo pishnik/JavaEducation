@@ -17,9 +17,11 @@ public class List<T> {
         return size;
     }
 
-    // хочу что бы можно было просто накидывать значения
-    public void add(T itemData) {
+    // тупо вставка в конец списка, все это можно упростить заведя ссылку на конец списка tail
+    // где можно хранить ссылку на конечный элемент
+    public void extend(T itemData) {
         ListItem<T> newItem = new ListItem<>(itemData);
+        // сейчас мы просто оборачиваем вставку по индексу длинны
         addItemByIndex(size, newItem);
     }
 
@@ -209,15 +211,16 @@ public class List<T> {
         newList.size = size;
         // создаем копию головы
         newList.head = new ListItem<>(head.getData());
-
+        // в новом списке встаем на первый элемент
         ListItem<T> newItem = newList.head;
+        // получаем следующий элемент оригинала
         ListItem<T> item = head.getNextItem();
 
         // пока элемент оригинала не пустой
         while (item != null) {
             // элементу нового списка присваиваем значение из оригинала
             newItem.setNextItem(new ListItem<>(item.getData()));
-            // переходим на следующий элемент
+            // переходим на следующий элемент копии
             newItem = newItem.getNextItem();
             // переходим на следующий элемент оригинала
             item = item.getNextItem();
@@ -227,23 +230,25 @@ public class List<T> {
     }
 
     public void reverse() {
-        ListItem<T> item = head;
-        ListItem<T> previousItem = null;
-        ListItem<T> nextItem;
+        // нужно более одного элемента
+        if (size > 1) {
+            // берем элемент следующий за головой
+            ListItem<T> currentItem = head.getNextItem();
+            // голова это по факту предыдущий элемент
+            head.setNextItem(null);
 
-        // пока есть элементы
-        while (item != null) {
-            // запоминаем следующий
-            nextItem = item.getNextItem();
-            // перебиваем следующий текущего на предыдущий
-            item.setNextItem(previousItem);
-            // в предыдущий кладем текущий
-            previousItem = item;
-            // в текущий следующий
-            item = nextItem;
+            // крутимся пока есть элементы в списке
+            while (currentItem != null) {
+                // сохраняем ссылку на следующий элемент
+                ListItem<T> nextItem = currentItem.getNextItem();
+                // текущему ставим ссылку на предыдущий
+                currentItem.setNextItem(head);
+                // в предыдущий сохраняем текущий
+                head = currentItem;
+                // переходим на следующий элемент
+                currentItem = nextItem;
+            }
         }
-
-        head = previousItem;
     }
 
     @Override
