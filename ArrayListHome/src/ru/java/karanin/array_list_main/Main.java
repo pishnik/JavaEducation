@@ -21,14 +21,23 @@ public class Main {
         System.out.print("Введите имя файла (путь к файлу): ");
         String filePath = scanner.nextLine();
 
-        ArrayList<String> fileLines = readFileToArrayList(filePath);
+        try {
+            ArrayList<String> fileLines = readFileLinesToArrayList(filePath);
 
-        if (!fileLines.isEmpty()) {
-            System.out.println("Строки файла: " + fileLines);
+            if (!fileLines.isEmpty()) {
+                System.out.println("Строки файла: " + fileLines);
+            } else {
+                System.out.println("Файл пуст");
+            }
+        } catch (FileNotFoundException e) {
+            System.out.printf("Файл \"%s\" не найден%n", filePath);
+        } catch (IOException e) {
+            System.out.println("При обработке файла произошла ошибка: " + e.getMessage());
         }
 
         // список без четных чисел
         ArrayList<Integer> numbers1 = new ArrayList<>(10);
+
         for (int i = 0; i < 10; i++) {
             numbers1.add(random.nextInt(100) + 1);
         }
@@ -37,20 +46,26 @@ public class Main {
         removeEvenNumbersFromArrayList(numbers1);
         System.out.println("Список без четных чисел: " + numbers1);
 
-        // список без повторов
-        ArrayList<Integer> numbers2 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 4, 2, 2, 3, 4, 5, 9, 11, 10));
-        System.out.println("Список c повторами: " + numbers2);
+        // список без повторов числа
+        ArrayList<Integer> numbersList = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 4, 2, 2, 3, 4, 5, 9, 11, 10));
+        System.out.println("Список c повторами: " + numbersList);
 
-        ArrayList<Integer> numbers3 = getArrayListWithNoRepeats(numbers2);
-        System.out.println("Список без повторов: " + numbers3);
+        ArrayList<Integer> numbersListWithNoRepeats = getArrayListWithNoRepeats(numbersList);
+        System.out.println("Список без повторов: " + numbersListWithNoRepeats);
+
+        // список без повторов со строками
+        ArrayList<String> stringsList = new ArrayList<>(Arrays.asList("раз", "два", "раз", "два", "три", "пять", "семь", "семь", "ноль", "ноль"));
+        System.out.println("Список c повторами: " + stringsList);
+
+        ArrayList<String> stringsListWithNoRepeats = getArrayListWithNoRepeats(stringsList);
+        System.out.println("Список без повторов: " + stringsListWithNoRepeats);
+
     }
 
-    public static ArrayList<String> readFileToArrayList(String filePath) {
-        // Мы должны выполнить загрузку, но можем сломаться.
-        // Функция требует return, технически мы ловим слом и превращаем ситуацию в штатную,
-        // но что-то должны вернуть в случаем слома, пусть будем возвращать пустой список.
-        // Для этого объявим его в начале и в самом конце сделаем return
-        // (что бы плодить return в catch)
+    public static ArrayList<String> readFileLinesToArrayList(String filePath) throws IOException {
+        // Мы должны выполнить загрузку, но можем сломаться
+        // что-то должны вернуть в случаем слома, пусть будем возвращать пустой список
+        // для этого объявим его в начале и в самом конце сделаем return
         ArrayList<String> fileLines = new ArrayList<>();
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
@@ -60,10 +75,6 @@ public class Main {
             while ((line = bufferedReader.readLine()) != null) {
                 fileLines.add(line);
             }
-        } catch (FileNotFoundException e) {
-            System.out.printf("Файл %s не найден%n", filePath);
-        } catch (IOException e) {
-            System.out.println("При обработке файла произошла ошибка: " + e.getMessage());
         }
 
         return fileLines;
@@ -77,15 +88,38 @@ public class Main {
         }
     }
 
-    public static ArrayList<Integer> getArrayListWithNoRepeats(ArrayList<Integer> numbers) {
-        ArrayList<Integer> numbersWithNoRepeats = new ArrayList<>(numbers.size());
+    // делаем метод рабочим для всех типов элементов в массиве
+    // не совсем понял принцип объявления в уже существующих классах
+    // почему <E> до ArrayList а не после, а Idea вообще предлагает убрать <E>,
+    // но нам то надо что бы тип была на весь ArrayList, в не ArrayList Object,
+    // запутался в объявлении generic
+    // public static ArrayList<E> getArrayListWithNoRepeats(ArrayList<E> elements) не работает, E не узнает
+    // public static <E> ArrayList getArrayListWithNoRepeats(ArrayList<E> elements) так будут warning raw
+    // вот так ушли все warning, но эт чисто методом тыка дошел, не понял зачем тут <E> в самом начале
+    public static <E> ArrayList<E> getArrayListWithNoRepeats(ArrayList<E> arrayList) {
+        ArrayList<E> arrayListWithNoRepeats = new ArrayList<>(arrayList.size());
 
-        for (Integer number : numbers) {
-            if (!numbersWithNoRepeats.contains(number)) {
-                numbersWithNoRepeats.add(number);
+        for (E element : arrayList) {
+            if (!arrayListWithNoRepeats.contains(element)) {
+                arrayListWithNoRepeats.add(element);
             }
         }
 
-        return numbersWithNoRepeats;
+        return arrayListWithNoRepeats;
     }
+
+    /* Пример от Object
+    // Если написать так, получим кучу warning raw и т.д.
+    public static ArrayList getArrayListWithNoRepeats(ArrayList arrayList) {
+        ArrayList arrayListWithNoRepeats = new ArrayList<>(arrayList.size());
+
+        for (Object item : arrayList) {
+            if (!arrayListWithNoRepeats.contains(item)) {
+                arrayListWithNoRepeats.add(item);
+            }
+        }
+
+        return arrayListWithNoRepeats;
+    }
+    */
 }

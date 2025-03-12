@@ -68,15 +68,15 @@ public class Main {
         // и при попытке пихнуть их в список мы пишем первый элемент и у него ставим следующим пустой "оригинал", теряя все связи
         // тут наверное нужен отдельный метод AddItems (который пробежит по цепочке и пихнет в конец ссылку из оригинала)
         // либо конструктор списка их элементов
-        ListItem<Integer> list4Item = new ListItem<>(5,
-                                                     new ListItem(4,
-                                                                  new ListItem(3,
-                                                                               new ListItem(2,
-                                                                                            new ListItem(1,
-                                                                                                          new ListItem(0,
-                                                                                                                null))))));
+        ListItem<Integer> list4Item0 = new ListItem(0,null);
+        ListItem<Integer> list4Item1 = new ListItem(1,list4Item0);
+        ListItem<Integer> list4Item2 = new ListItem(2,list4Item1);
+        ListItem<Integer> list4Item3 = new ListItem(3,list4Item2);
+        ListItem<Integer> list4Item4 = new ListItem(4,list4Item3);
+        ListItem<Integer> list4Item5 = new ListItem(5,list4Item4);
+
         List<Integer> list4 = new List<>();
-        list4.addFirstItem(list4Item);
+        list4.addFirstItem(list4Item5);
         System.out.printf("Список: %s%n", list4);
     }
 }
