@@ -154,8 +154,8 @@ public class ArrayList<E> implements List<E> {
         }
 
         // накидываем элементы
-        for (Object object : c) {
-            add((E) object);
+        for (E object : c) {
+            add(object);
         }
 
         // говорим что список изменился, а как он мог не поменяться...
@@ -179,9 +179,9 @@ public class ArrayList<E> implements List<E> {
         // технически могли бы через копирование массива
         // закинуть часть до индекса, переданный массив, закинуть часть после индекса
         // идем по элементам
-        for (Object object : c) {
+        for (E object : c) {
             // накидываем элементы по очереди и двигаем индекс дальше
-            add(currentIndex, (E) object);
+            add(currentIndex, object);
             currentIndex++;
         }
 
@@ -396,7 +396,7 @@ public class ArrayList<E> implements List<E> {
         // текущий элемент пустой
         private int currentIndex = -1;
 
-        // есть ли следующий элементв
+        // есть ли следующий элемент
         public boolean hasNext() {
             return currentIndex + 1 < size;
         }
