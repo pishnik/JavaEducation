@@ -86,13 +86,13 @@ public class Matrix {
 
         for (int i = 0; i < vectorsArray.length; i++) {
             // метода добивки вектора нет, пойдем через массив - пробегаем по вектору, собираем массив
-            double[] tempArray = new double[vectorsArray[i].getSize()];
+            double[] rowItems = new double[vectorsArray[i].getSize()];
 
             for (int j = 0; j < vectorsArray[i].getSize(); j++) {
-                tempArray[j] = vectorsArray[i].getComponentByIndex(j);
+                rowItems[j] = vectorsArray[i].getComponentByIndex(j);
             }
 
-            rows[i] = new Vector(maxVectorSize, tempArray);
+            rows[i] = new Vector(maxVectorSize, rowItems);
         }
     }
 
@@ -122,8 +122,8 @@ public class Matrix {
         }
 
         // важно что бы размеры векторов совпадали
-        if (vector.getSize() != rows[index].getSize()) {
-            throw new IllegalArgumentException(String.format("Количество элементов вектора [%d] не совпадает с количество столбцов в матрице [%d]!", vector.getSize(), rows[index].getSize()));
+        if (vector.getSize() != getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("Количество элементов вектора [%d] не совпадает с количество столбцов в матрице [%d]!", vector.getSize(), getColumnsCount()));
         }
 
         // новый вектор созданный из переданного
@@ -178,8 +178,8 @@ public class Matrix {
 
     // умножение на скаляр
     public void multiplyByScalar(double scalar) {
-        for (Vector vector : rows) {
-            vector.multiply(scalar);
+        for (Vector matrixRow : rows) {
+            matrixRow.multiply(scalar);
         }
     }
 
@@ -202,13 +202,7 @@ public class Matrix {
 
     // прибавить
     public void add(Matrix matrix) {
-        if (rows.length != matrix.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество строк в прибавляемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
-        }
-
-        if (getColumnsCount() != matrix.getColumnsCount()) {
-            throw new IllegalArgumentException(String.format("Количество столбцов прибавляемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix.getColumnsCount(), getColumnsCount()));
-        }
+        checkSizesEqual(this, matrix);
 
         for (int i = 0; i < rows.length; i++) {
             rows[i].add(matrix.rows[i]);
@@ -217,13 +211,7 @@ public class Matrix {
 
     // отнять
     public void subtract(Matrix matrix) {
-        if (rows.length != matrix.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество строк в вычитаемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix.rows.length, rows.length));
-        }
-
-        if (getColumnsCount() != matrix.getColumnsCount()) {
-            throw new IllegalArgumentException(String.format("Количество столбцов вычитаемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix.getColumnsCount(), getColumnsCount()));
-        }
+        checkSizesEqual(this, matrix);
 
         for (int i = 0; i < rows.length; i++) {
             rows[i].subtract(matrix.rows[i]);
@@ -234,6 +222,7 @@ public class Matrix {
     private Matrix getMinor(int rowIndex, int columnIndex) {
         // создаем минорную матрицу
         int minorLength = rows.length - 1;
+
         double[][] minor = new double[minorLength][minorLength];
         // эти переменные для того, чтобы пропускать строку и столбец
         int deltaI = 0;
@@ -286,10 +275,10 @@ public class Matrix {
         return determinant;
     }
 
-
     // сложение матриц
     public static Matrix getSum(Matrix matrix1, Matrix matrix2) {
-        checkSizes(matrix1, matrix2);
+        checkSizesEqual(matrix1, matrix2);
+
         Matrix resultMatrix = new Matrix(matrix1);
         resultMatrix.add(matrix2);
 
@@ -298,27 +287,24 @@ public class Matrix {
 
     // вычитание матрицы из матрицы
     public static Matrix getDifference(Matrix matrix1, Matrix matrix2) {
-        checkSizes(matrix1, matrix2);
+        checkSizesEqual(matrix1, matrix2);
+
         Matrix resultMatrix = new Matrix(matrix1);
         resultMatrix.subtract(matrix2);
 
         return resultMatrix;
     }
 
-    private static void checkSizes(Matrix matrix1, Matrix matrix2) {
-        if (matrix1.rows.length != matrix2.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество строк в вычитаемой матрице %d не совпадает с количеством строк исходной матрицы %d", matrix2.rows.length, matrix1.rows.length));
-        }
-
-        if (matrix1.getColumnsCount() != matrix2.getColumnsCount()) {
-            throw new IllegalArgumentException(String.format("Количество столбцов вычитаемой матрицы %d не совпадает с количеством столбцов исходной матрицы %d", matrix2.getColumnsCount(), matrix1.getColumnsCount()));
+    private static void checkSizesEqual(Matrix matrix1, Matrix matrix2) {
+        if (matrix1.getRowsCount() != matrix2.getRowsCount() || matrix1.getColumnsCount() != matrix2.getColumnsCount()) {
+            throw new IllegalArgumentException(String.format("У матриц не совпадают размеры: [%dX%d]/[%dX%d]", matrix1.getRowsCount(), matrix1.getColumnsCount(),  matrix2.getRowsCount(), matrix2.getColumnsCount()));
         }
     }
 
     // умножение матрицы на матрицу
     public static Matrix getMultiplication(Matrix matrix1, Matrix matrix2) {
-        if (matrix1.getColumnsCount() != matrix2.rows.length) {
-            throw new IllegalArgumentException(String.format("Количество столбцов в первой матрице %d должно совпадать с количеством строк второй матрицы %d", matrix1.rows[0].getSize(), matrix2.rows.length));
+        if (matrix1.getColumnsCount() != matrix2.getRowsCount()) {
+            throw new IllegalArgumentException(String.format("Количество столбцов в первой матрице %d должно совпадать с количеством строк второй матрицы %d", matrix1.getColumnsCount(), matrix2.rows.length));
         }
 
         double[][] result = new double[matrix1.rows.length][matrix2.getColumnsCount()];
@@ -333,6 +319,7 @@ public class Matrix {
     }
 
     // проверка равенства
+    @Override
     public boolean equals(Object object) {
         // сам объект
         if (object == this) {
@@ -347,22 +334,14 @@ public class Matrix {
         // привели класс
         Matrix matrix = (Matrix) object;
 
-        // размеры проверим
+        // размеры проверим, что бы зря по элементам не бегать
         if (matrix.rows.length != rows.length || getColumnsCount() != matrix.getColumnsCount()) {
             return false;
         }
 
-        // пробежимся по векторам, проверим их содержимое
-        for (int i = 0; i < rows.length; i++) {
-            // если хть один вектор не равен
-            if (!rows[i].equals(matrix.rows[i])) {
-                // выходим - не совпали
-                return false;
-            }
-        }
-
-        // дошли до сюда, все проверки пройдены
-        return true;
+        // если размеры ок, надо сверять элементы
+        // штатно сверяем массивы векторов
+        return Arrays.equals(rows, matrix.rows);
     }
 
     // хэш

@@ -130,10 +130,10 @@ public class Main {
         determinant = matrix11.getDeterminant();
         System.out.printf("Определитель матрицы №11: %.2f%n", determinant);
 
-        double[][] numbersArray5 = new double[][]{
-                new double[] {},
-                new double[] {1},
-                new double[] {2,3}
+        double[][] numbersArray5 = {
+                new double[]{},
+                new double[]{1},
+                new double[]{2, 3}
         };
         Matrix matrix12 = new Matrix(numbersArray5);
         System.out.println("Матрица №12: " + matrix12);
