@@ -86,13 +86,13 @@ public class Matrix {
 
         for (int i = 0; i < vectorsArray.length; i++) {
             // метода добивки вектора нет, пойдем через массив - пробегаем по вектору, собираем массив
-            double[] rowItems = new double[vectorsArray[i].getSize()];
+            double[] rowComponents = new double[vectorsArray[i].getSize()];
 
             for (int j = 0; j < vectorsArray[i].getSize(); j++) {
-                rowItems[j] = vectorsArray[i].getComponentByIndex(j);
+                rowComponents[j] = vectorsArray[i].getComponentByIndex(j);
             }
 
-            rows[i] = new Vector(maxVectorSize, rowItems);
+            rows[i] = new Vector(maxVectorSize, rowComponents);
         }
     }
 
@@ -178,8 +178,8 @@ public class Matrix {
 
     // умножение на скаляр
     public void multiplyByScalar(double scalar) {
-        for (Vector matrixRow : rows) {
-            matrixRow.multiply(scalar);
+        for (Vector row : rows) {
+            row.multiply(scalar);
         }
     }
 
