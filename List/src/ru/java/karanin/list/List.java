@@ -1,5 +1,7 @@
 package ru.java.karanin.list;
 
+import java.util.Objects;
+
 public class List<T> {
     // начало списка
     private ListItem<T> head;
@@ -35,18 +37,17 @@ public class List<T> {
 
     // получить значение 1 элемента
     public T getFirst() {
-        checkSize();
+        isEmpty();
 
         return head.getData();
     }
 
     // проверка индекса элемента
-    private void checkSize() {
+    private void isEmpty() {
         if (size == 0) {
-            throw new RuntimeException("Список пуст");
+            throw new IllegalStateException("Список пуст");
         }
     }
-
 
     // проверка индекса элемента
     private void checkIndex(int index) {
@@ -98,18 +99,15 @@ public class List<T> {
 
         // берем предыдущий
         ListItem<T> previousItem = getItemByIndex(index - 1);
-        // создали элемент
-        ListItem<T> item = new ListItem<>(data);
-        // перебили ссылки
-        item.setNextItem(previousItem.getNextItem());
-        previousItem.setNextItem(item);
+        // создали элемент, у него ссылка на следующий, а на него ссылается предыдущий
+        previousItem.setNextItem(new ListItem<>(data, previousItem.getNextItem()));
         // увеличили размер
         size++;
     }
 
     // удаление первого элемента
     public T deleteFirst() {
-        checkSize();
+        isEmpty();
 
         // получили значение головы
         T data = head.getData();
@@ -127,7 +125,6 @@ public class List<T> {
         checkIndex(index);
 
         // удаляем первый элемент
-
         if (index == 0) {
             return deleteFirst();
         }
@@ -154,28 +151,13 @@ public class List<T> {
         // предыдущий у начала пустой
         ListItem<T> previousItem = null;
 
-        boolean find;
-
         // пока не пусто
         while (item != null) {
             // получаем значение
             T itemData = item.getData();
 
-            // раз уж дали возможность накидывать null значения
-            find = false;
-
-            // если в списке есть null
-            if (itemData != null) {
-                find = itemData.equals(data);
-            } else {
-                // нам надо удалить null
-                if (data == null) {
-                    find = true;
-                }
-            }
-
             // если значение нужное
-            if (find) {
+            if (Objects.equals(itemData, data)) {
                 // если предыдущего нет
                 if (previousItem == null) {
                     // переписываем голову
@@ -215,16 +197,16 @@ public class List<T> {
         // создаем копию головы
         copyList.head = new ListItem<>(head.getData());
         // в новом списке встаем на первый элемент
-        ListItem<T> newItem = copyList.head;
+        ListItem<T> itemCopyList = copyList.head;
         // получаем следующий элемент оригинала
         ListItem<T> item = head.getNextItem();
 
         // пока элемент оригинала не пустой
         while (item != null) {
             // элементу нового списка присваиваем значение из оригинала
-            newItem.setNextItem(new ListItem<>(item.getData()));
+            itemCopyList.setNextItem(new ListItem<>(item.getData()));
             // переходим на следующий элемент копии
-            newItem = newItem.getNextItem();
+            itemCopyList = itemCopyList.getNextItem();
             // переходим на следующий элемент оригинала
             item = item.getNextItem();
         }
@@ -238,23 +220,24 @@ public class List<T> {
             return;
         }
 
-        // берем элемент следующий за головой
-        ListItem<T> currentItem = head.getNextItem();
-        // голова это по факту предыдущий элемент
-        head.setNextItem(null);
+        // начинаем с первого элемента
+        ListItem<T> currentItem = head;
+        // предыдущий с начала будет пустым
+        ListItem<T> previousItem = null;
 
-        // крутимся пока есть элементы в списке
-        while (currentItem != null) {
-            // сохраняем ссылку на следующий элемент
+        // пока в списке есть элементы
+        while (currentItem != null){
+            // следующий элемент
             ListItem<T> nextItem = currentItem.getNextItem();
-            // текущему ставим ссылку на предыдущий
-            currentItem.setNextItem(head);
-            // в предыдущий сохраняем текущий
-            head = currentItem;
-            // переходим на следующий элемент
+            // устанавливаем предыдущий
+            currentItem.setNextItem(previousItem);
+            // предыдущий  = текущему
+            previousItem = currentItem;
+            // текущий = следующий
             currentItem = nextItem;
         }
 
+        head = previousItem;
     }
 
     @Override
@@ -263,11 +246,16 @@ public class List<T> {
 
         ListItem<T> item;
 
-        for (item = head; item.getNextItem() != null; item = item.getNextItem()) {
+        //for (item = head; item.getNextItem() != null; item = item.getNextItem()) {
+        for (item = head; item != null; item = item.getNextItem()) {
             stringBuilder.append(item.getData()).append(", ");
         }
 
-        stringBuilder.append(item.getData()).append('}');
+        if (size > 0) {
+            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        }
+
+        stringBuilder.append('}');
 
         return stringBuilder.toString();
     }

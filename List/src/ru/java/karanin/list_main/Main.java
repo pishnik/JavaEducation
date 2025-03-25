@@ -7,6 +7,7 @@ public class Main {
         System.out.println("Односвязный список!");
 
         List<Integer> list1 = new List<>();
+        System.out.printf("Список: %s%n", list1);
         list1.add(0);
         list1.add(1);
         list1.add(2);
@@ -23,7 +24,7 @@ public class Main {
         list2.add("Three");
         list2.add("Four");
         // раз уже была возможность вставлять null,
-        // но это не верно, так как в списке должен ожидаем тот тип, что указан при создании
+        // но это не верно, так как в списке ожидаем тот тип, что указан при создании
         // лучше запрещать добавлять null и не искать его даже при удалении
         list2.add(null);
         list2.add("Five");

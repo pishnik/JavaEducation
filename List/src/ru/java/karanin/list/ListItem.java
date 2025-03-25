@@ -1,7 +1,6 @@
 package ru.java.karanin.list;
 
 class ListItem<T> {
-
     // значение
     private T data;
 
