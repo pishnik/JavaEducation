@@ -3,54 +3,55 @@ package ru.java.karanin.hash_table;
 import java.util.*;
 
 public class HashTable<E> implements Collection<E> {
-    private ArrayList<E>[] items;
-
+    private final ArrayList<E>[] lists;
+    // количество элементов
     private int size;
+    // количество изменений
+    private int changesCount;
 
-    public HashTable(int itemsCount) {
-        if (itemsCount <= 0) {
-            throw new IllegalArgumentException(String.format("Размер хеш-таблицы должен быть больше 0, передано %d", itemsCount));
+    @SuppressWarnings("unchecked")
+    public HashTable(int tableCapacity) {
+        if (tableCapacity <= 0) {
+            throw new IllegalArgumentException(String.format("Размер хеш-таблицы должен быть больше 0, передано значение %d", tableCapacity));
         }
 
-        items = new ArrayList[itemsCount];
-
-        for (int i = 0; i < itemsCount; i++) {
-            items[i] = new ArrayList<>();
-        }
+        lists = new ArrayList[tableCapacity];
     }
 
     public HashTable() {
         this(10);
     }
 
-    private int getItemIndex(E o) {
+    private int getItemIndex(Object o) {
+        // null значения будут лежать в 0 элементе массива
         if (o == null) {
-            throw new IllegalArgumentException("Таблица не поддерживает работу с null");
+            return 0;
         }
 
-        return Math.abs(o.hashCode() % items.length);
+        return Math.abs(o.hashCode() % lists.length);
     }
 
     @Override
     public int size() {
+        // количество элементов
         return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return items.length == 0;
+        // если количество элементов равно 0
+        return size == 0;
     }
 
     @Override
     public boolean contains(Object o) {
-        if (o == null) {
-            // у нас нет null
+        int index = getItemIndex(o);
+
+        if (lists[index] == null) {
             return false;
         }
 
-        int index = getItemIndex((E) o);
-
-        return items[index].contains(o);
+        return lists[index].contains(o);
     }
 
     @Override
@@ -60,16 +61,19 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public Object[] toArray() {
-        // массив объектов
-        Object[] array = new Object[items.length];
+        // массив объектов, размер = size таблицы
+        Object[] array = new Object[size];
 
         // индекс
         int i = 0;
 
         // бегаем по массиву списков и набираем элементы в массив объектов
-        for (ArrayList<E> item : items) {
-            for (int j = 0; j < item.size(); j++, i++) {
-                array[i] = item.get(j);
+        for (ArrayList<E> list : lists) {
+            if (list != null) {
+                for (E item : list) {
+                    array[i] = item;
+                    i++;
+                }
             }
         }
 
@@ -81,28 +85,32 @@ public class HashTable<E> implements Collection<E> {
         // считаем индекс
         int index = getItemIndex(o);
 
-        // проверяем в нет ли в таком списке уже такого элемента
-        if (!items[index].contains(o)) {
-            // добавили
-            items[index].add(o);
-            // увеличили размер
-            size++;
-
-            // было добавление
-            return true;
+        if (lists[index] == null) {
+            lists[index] = new ArrayList<>();
         }
 
-        // ничего не добавили
-        return false;
+        // добавили по индексу элемент
+        lists[index].add(o);
+        // увеличили размер
+        size++;
+        changesCount++;
+
+        // было добавление, таблица изменилась
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
         // считаем индекс
-        int index = getItemIndex((E) o);
+        int index = getItemIndex(o);
 
-        if (items[index].remove(o)) {
+        if (lists[index] == null) {
+            return false;
+        }
+
+        if (lists[index].remove(o)) {
             size--;
+            changesCount++;
             return true;
         }
 
@@ -110,61 +118,66 @@ public class HashTable<E> implements Collection<E> {
     }
 
     @Override
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         if (c == null) {
-            return false;
+            throw new NullPointerException("Передана null коллекция");
         }
 
         if (c.size() == 0) {
             return false;
         }
 
-        boolean result = false;
-
-        for (Object element : c) {
-            if (add((E) element)) {
-                result = true;
-            }
+        for (E element : c) {
+            add(element);
         }
 
-        return result;
+        return true;
     }
 
     @Override
     public void clear() {
-        // стерли элементы в массиве
-        for (ArrayList<E> item : items) {
-            item.clear();
+        // если размер 0, то нечего очищать
+        if (size == 0) {
+            return;
+        }
+
+        // стираем элементы в массиве
+        for (ArrayList<E> list : lists) {
+            list.clear();
         }
 
         // обнулили длину
         size = 0;
+        changesCount++;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        // ну и не надо ничего удалять тогда
         if (c == null) {
-            return false;
+            throw new NullPointerException("Передана null коллекция");
         }
 
-        // ну и не надо ничего удалять тогда
+        // мы оставляем только то что внутри коллекции, а там нет ничего
+        // сносим все содержимое
         if (c.size() == 0) {
-            return false;
+            clear();
+
+            return true;
         }
 
         boolean result = false;
 
         size = 0;
         // идем по спискам и сносим элементы, что не входят в коллекцию
-        for (ArrayList<E> list : items) {
-            if (list.retainAll(c)) {
-                result = true;
-                size = size + list.size();
-            }
+        for (ArrayList<E> list : lists) {
+            if (list != null) {
+                if (list.retainAll(c)) {
+                    result = true;
+                }
 
-            // нам надо пересчитать длину после операции
-            size = size + list.size();
+                // нам надо пересчитать длину после операции
+                size += list.size();
+            }
         }
 
         return result;
@@ -172,36 +185,30 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public boolean removeAll(Collection c) {
-        // пустоту и удалять не надо
         if (c == null) {
-            return false;
+            throw new NullPointerException("Передана null коллекция");
         }
 
         if (c.size() == 0) {
             return false;
         }
 
-        boolean result = false;
+        int oldSize = size;
 
         for (Object element : c) {
-            if (remove(element)) {
-                result = true;
+            while (contains(element)) {
+                remove(element);
             }
         }
 
-        return result;
+        return oldSize != size;
     }
 
     @Override
     public boolean containsAll(Collection c) {
         // если нам дали null
         if (c == null) {
-            return false;
-        }
-
-        // если дали пустую коллекцию
-        if (c.size() == 0) {
-            return true;
+            throw new NullPointerException("Передана null коллекция");
         }
 
         // идем по коллекции и смотри есть ли в нашем списке такой объект
@@ -217,24 +224,26 @@ public class HashTable<E> implements Collection<E> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
         // если наш массив больше чем тот что нам дали
         if (size > a.length) {
-            T[] array = (T[]) new Object[size];
+            T[] array = (T[]) Arrays.copyOf(a, size, a.getClass());
             int i = 0;
 
             for (E element : this) {
                 array[i] = (T) element;
+                i++;
             }
 
             return array;
         }
 
-        T[] array = (T[]) this.toArray();
         // копируем наш список в переданный массив
-        System.arraycopy(array, 0, a, 0, size);
+        T[] resultArray = (T[]) Arrays.copyOf(toArray(), size, a.getClass());
+        System.arraycopy(resultArray, 0, a, 0, size);
 
-        // Если массив имеет больше элементов, чем список,
+        // если массив имеет больше элементов, чем список,
         // элемент в массиве, следующий сразу за концом списка, устанавливается в значение null
         if (a.length > size) {
             a[size] = null;
@@ -247,10 +256,8 @@ public class HashTable<E> implements Collection<E> {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("[").append(System.lineSeparator());
 
-        if (items.length > 0) {
-            for (int i = 0; i < items.length; i++) {
-                stringBuilder.append(' ').append(items[i]).append(System.lineSeparator());
-            }
+        for (ArrayList<E> list : lists) {
+            stringBuilder.append(' ').append(list).append(System.lineSeparator());
         }
 
         stringBuilder.append(']');
@@ -260,71 +267,42 @@ public class HashTable<E> implements Collection<E> {
 
     // внутренний класс итератора
     private class HashTableIterator implements Iterator<E> {
-        private int currentIndex = 0;
+        private int currentIndex = -1;
 
-        private Iterator<E> itemsIterator = items[currentIndex].iterator();
+        private final int CHANGES_COUNT = changesCount;
 
         public boolean hasNext() {
-            while (currentIndex < items.length - 1) {
-                if (itemsIterator.hasNext()) {
-                    return true;
-                }
-
-                currentIndex++;
-                itemsIterator = items[currentIndex].iterator();
-            }
-            return itemsIterator.hasNext();
+            return currentIndex + 1 < size;
         }
 
         // переход на следующий элемент
         public E next() {
             if (!hasNext()) {
-                throw new NoSuchElementException("Достигнут конец");
+                throw new NoSuchElementException("Достигнут конец таблицы");
             }
 
-            currentIndex++;
-
-            return itemsIterator.next();
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 37;
-        int hash = 1;
-
-        for (E element : this) {
-            hash = prime * hash + element.hashCode();
-        }
-
-        return hash;
-    }
-
-    public boolean equals(Object object) {
-        // этот же объект
-        if (object == this) {
-            return true;
-        }
-
-        // пустота или передали другой класс
-        if (object == null || object.getClass() != getClass()) {
-            return false;
-        }
-
-        HashTable<E> hashTableObject = (HashTable<E>) object;
-
-        // размеры не совпадают
-        if (hashTableObject.size != size) {
-            return false;
-        }
-
-        // если получили несовпадение, точно не равны
-        for (int i = 0; i < size; i++) {
-            if (!Objects.equals(hashTableObject.items[i], items[i])) {
-                return false;
+            if (changesCount != CHANGES_COUNT) {
+                throw new ConcurrentModificationException("Во время выполнения итератора таблица изменилась");
             }
-        }
 
-        return true;
+            ++currentIndex;
+
+            int index = 0;
+            E nextItem = null;
+
+            // пробегаем поэлементно
+            for (ArrayList<E> list : lists) {
+                if (list != null) {
+                    for (E item : list) {
+                        if (index == currentIndex) {
+                            nextItem = item;
+                        }
+                        index++;
+                    }
+                }
+            }
+
+            return nextItem;
+        }
     }
 }

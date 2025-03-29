@@ -9,12 +9,17 @@ public class Main {
         HashTable<String> strings = new HashTable<>();
 
         strings.add("Раз");
+        strings.add("Раз");
+        strings.add("Раз");
         strings.add("Два");
+        strings.add("Три");
         strings.add("Три");
         strings.add("Четыре");
         strings.add("Пять");
+        strings.add(null);
         strings.add("Шесть");
         strings.add("Семь");
+        strings.add(null);
         strings.add("Восемь");
         strings.add("Девять");
         strings.add("Десять");
@@ -41,17 +46,17 @@ public class Main {
         strings.remove("Десять");
         System.out.println(strings);
 
-
         ArrayList<String> list = new ArrayList<>();
         list.add("Раз");
         list.add("Три");
 
         System.out.println(strings.containsAll(list));
 
-        if (strings.removeAll(list)) {
+        if (strings.retainAll(list)) {
             System.out.println(strings);
         }
 
+        System.out.println("Размер Hash Table: " + strings.size());
         list.clear();
         list.add("Сто");
         list.add("Двести");
@@ -59,5 +64,9 @@ public class Main {
         System.out.println(strings);
 
         System.out.println(strings.hashCode());
+
+        for (String string : strings) {
+            System.out.println(string);
+        }
     }
 }
