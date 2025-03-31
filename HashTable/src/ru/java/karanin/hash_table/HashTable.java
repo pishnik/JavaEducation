@@ -123,7 +123,7 @@ public class HashTable<E> implements Collection<E> {
             throw new NullPointerException("Передана null коллекция");
         }
 
-        if (c.size() == 0) {
+        if (c.isEmpty()) {
             return false;
         }
 
@@ -159,7 +159,7 @@ public class HashTable<E> implements Collection<E> {
 
         // мы оставляем только то что внутри коллекции, а там нет ничего
         // сносим все содержимое
-        if (c.size() == 0) {
+        if (c.isEmpty()) {
             clear();
 
             return true;
@@ -189,7 +189,7 @@ public class HashTable<E> implements Collection<E> {
             throw new NullPointerException("Передана null коллекция");
         }
 
-        if (c.size() == 0) {
+        if (c.isEmpty()) {
             return false;
         }
 
