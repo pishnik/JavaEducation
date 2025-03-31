@@ -44,10 +44,6 @@ public class Main {
         strings1.addAll(0, strings2);
         System.out.println("Список: " + strings1);
 
-
-        // как только мы усекаем размерность массива,
-        // items[size] в remove будет приводить к ошибке,
-        // так как не будет элемента на позиции size (size = length)
         strings1.trimToSize();
 
         ArrayList<String> strings3 = new ArrayList<>();

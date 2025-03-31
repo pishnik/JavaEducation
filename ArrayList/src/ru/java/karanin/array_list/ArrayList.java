@@ -101,7 +101,7 @@ public class ArrayList<E> implements List<E> {
         items[size] = e;
         // размер увеличили
         size++;
-        //
+        // увеличили количество изменений
         changesCount++;
 
         return true;
@@ -146,20 +146,19 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        // тут можно вставить в конец списка (index = size)
-        checkIndexRange(index, size);
-
         if (c == null) {
             throw new NullPointerException("Передана null коллекция");
         }
 
-        if (c.size() == 0) {
+        // тут можно вставить в конец списка (index = size)
+        checkIndexRange(index, size);
+
+        if (c.isEmpty()) {
             return false;
         }
 
         // коллекция должна полностью влезть в список
         ensureCapacity(size + c.size());
-
         // смещаем элементы с индекса правее
         System.arraycopy(items, index, items, index + c.size(), size - index);
 
@@ -175,7 +174,7 @@ public class ArrayList<E> implements List<E> {
         }
 
         // размер увеличили на количество элементов коллекции
-        size = size + c.size();
+        size += c.size();
         changesCount++;
 
         // ну поменяли же
@@ -188,18 +187,17 @@ public class ArrayList<E> implements List<E> {
             throw new NullPointerException("Передана null коллекция");
         }
 
-        if (c.size() == 0) {
+        if (c.isEmpty()) {
             return false;
         }
 
         boolean result = false;
 
         //  идем по элементам
-        for (int i = 0; i < size; i++) {
+        for (int i = size - 1; i >= 0; i--) {
             if (c.contains(items[i])) {
                 remove(i);
                 result = true;
-                i--;
             }
         }
 
@@ -210,18 +208,6 @@ public class ArrayList<E> implements List<E> {
     public boolean retainAll(Collection<?> c) {
         if (c == null) {
             throw new NullPointerException("Передана null коллекция");
-        }
-
-        // мы должны оставить только те элементы, что есть в переданной коллекции
-        // если передали пустую коллекцию, удаляем все
-        if (c.size() == 0) {
-            // если есть что удалить
-            if (size > 0) {
-                clear();
-                return true;
-            }
-
-            return false;
         }
 
         boolean result = false;
@@ -251,7 +237,7 @@ public class ArrayList<E> implements List<E> {
         Arrays.fill(items, 0, size, null);
         // обнуляем размер
         size = 0;
-        //
+        // увеличили количество изменений
         changesCount++;
     }
 
@@ -263,18 +249,18 @@ public class ArrayList<E> implements List<E> {
     }
 
     @Override
-    public E set(int index, E element) {
+    public E set(int index, E item) {
         checkIndexRange(index, size - 1);
 
         E oldItem = items[index];
-        items[index] = element;
+        items[index] = item;
         changesCount++;
 
         return oldItem;
     }
 
     @Override
-    public void add(int index, E element) {
+    public void add(int index, E item) {
         // тут можно вставить в конец списка (index = size)
         checkIndexRange(index, size);
 
@@ -283,10 +269,10 @@ public class ArrayList<E> implements List<E> {
         // смещаем элементы копированием вправо
         System.arraycopy(items, index, items, index + 1, size - index);
         // присваиваем элемент
-        items[index] = element;
+        items[index] = item;
         // увеличиваем размер
         size++;
-        //
+        // увеличили количество изменений
         changesCount++;
     }
 
@@ -300,11 +286,7 @@ public class ArrayList<E> implements List<E> {
         // сдвигаем элементы влево, копирование элементов
         System.arraycopy(items, index + 1, items, index, size - index - 1);
 
-        // нужно затереть последний элемент,
-        // но только в том случае, если size < длинны массива
-        if (items.length > size) {
-            items[size] = null;
-        }
+        items[size - 1] = null;
 
         // уменьшили размер
         size--;
@@ -356,7 +338,9 @@ public class ArrayList<E> implements List<E> {
         int hash = 1;
 
         for (int i = 0; i < size; i++) {
-            hash = prime * hash + items[i].hashCode();
+            if (items[i] != null) {
+                hash = prime * hash + items[i].hashCode();
+            }
         }
 
         return hash;
@@ -404,15 +388,13 @@ public class ArrayList<E> implements List<E> {
             stringBuilder.append(items[i]).append(", ");
         }
 
-        stringBuilder.append(items[size - 1]);
-
-        stringBuilder.append('}');
+        stringBuilder.append(items[size - 1]).append('}');
 
         return stringBuilder.toString();
     }
 
     // для проверки индекса в методах
-    private void checkIndexRange(int index, int maxIndex) {
+    private static void checkIndexRange(int index, int maxIndex) {
         if (index < 0 || index > maxIndex) {
             throw new IndexOutOfBoundsException(String.format("Индекс может быть в диапазоне [0, %d], передано значение %d", maxIndex, index));
         }
@@ -421,13 +403,13 @@ public class ArrayList<E> implements List<E> {
     // внутренний класс итератора
     private class ArrayListIterator implements Iterator<E> {
         // текущий элемент пустой
-        private int i = -1;
-        //
-        private final int CHANGES_COUNT = changesCount;
+        private int currentIndex = -1;
+        // запомнили количество изменений
+        private final int initialChangesCount = changesCount;
 
         // есть ли следующий элемент
         public boolean hasNext() {
-            return i + 1 < size;
+            return currentIndex + 1 < size;
         }
 
         // переход на следующий элемент
@@ -436,13 +418,13 @@ public class ArrayList<E> implements List<E> {
                 throw new NoSuchElementException("Достигнут конец списка");
             }
 
-            if (changesCount != CHANGES_COUNT) {
+            if (changesCount != initialChangesCount) {
                 throw new ConcurrentModificationException("Во время выполнения итератора список изменился");
             }
 
-            i++;
+            currentIndex++;
 
-            return items[i];
+            return items[currentIndex];
         }
     }
 }
