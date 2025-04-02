@@ -65,6 +65,7 @@ public class Main {
         System.out.printf("Копия списка: %s%n", list3);
 
         list3.reverse();
+        list3.addFirst(null);
         list3.deleteByData(null);
         System.out.printf("Список: %s%n", list3);
     }

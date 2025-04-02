@@ -37,13 +37,12 @@ public class List<T> {
 
     // получить значение 1 элемента
     public T getFirst() {
-        isEmpty();
+        checkListEmpty();
 
         return head.getData();
     }
 
-    // проверка индекса элемента
-    private void isEmpty() {
+    private void checkListEmpty() {
         if (size == 0) {
             throw new IllegalStateException("Список пуст");
         }
@@ -107,7 +106,7 @@ public class List<T> {
 
     // удаление первого элемента
     public T deleteFirst() {
-        isEmpty();
+        checkListEmpty();
 
         // получили значение головы
         T data = head.getData();
@@ -161,7 +160,7 @@ public class List<T> {
                 // если предыдущего нет
                 if (previousItem == null) {
                     // переписываем голову
-                    head = item.getNextItem();
+                    head = head.getNextItem();
                 } else {
                     // иначе в предыдущий пишем следующий удаляемого
                     previousItem.setNextItem(item.getNextItem());
@@ -197,16 +196,16 @@ public class List<T> {
         // создаем копию головы
         copyList.head = new ListItem<>(head.getData());
         // в новом списке встаем на первый элемент
-        ListItem<T> itemCopyList = copyList.head;
+        ListItem<T> copyListItem = copyList.head;
         // получаем следующий элемент оригинала
         ListItem<T> item = head.getNextItem();
 
         // пока элемент оригинала не пустой
         while (item != null) {
             // элементу нового списка присваиваем значение из оригинала
-            itemCopyList.setNextItem(new ListItem<>(item.getData()));
+            copyListItem.setNextItem(new ListItem<>(item.getData()));
             // переходим на следующий элемент копии
-            itemCopyList = itemCopyList.getNextItem();
+            copyListItem = copyListItem.getNextItem();
             // переходим на следующий элемент оригинала
             item = item.getNextItem();
         }
@@ -226,7 +225,7 @@ public class List<T> {
         ListItem<T> previousItem = null;
 
         // пока в списке есть элементы
-        while (currentItem != null){
+        while (currentItem != null) {
             // следующий элемент
             ListItem<T> nextItem = currentItem.getNextItem();
             // устанавливаем предыдущий
@@ -242,18 +241,17 @@ public class List<T> {
 
     @Override
     public String toString() {
+        if (size == 0) {
+            return "{}";
+        }
+
         StringBuilder stringBuilder = new StringBuilder("{");
 
-        ListItem<T> item;
-
-        //for (item = head; item.getNextItem() != null; item = item.getNextItem()) {
-        for (item = head; item != null; item = item.getNextItem()) {
+        for (ListItem<T> item = head; item != null; item = item.getNextItem()) {
             stringBuilder.append(item.getData()).append(", ");
         }
 
-        if (size > 0) {
-            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
-        }
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 
         stringBuilder.append('}');
 

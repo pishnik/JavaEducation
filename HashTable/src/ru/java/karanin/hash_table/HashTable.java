@@ -269,7 +269,7 @@ public class HashTable<E> implements Collection<E> {
     private class HashTableIterator implements Iterator<E> {
         private int currentIndex = -1;
 
-        private final int CHANGES_COUNT = changesCount;
+        private final int initialChangesCount = changesCount;
 
         public boolean hasNext() {
             return currentIndex + 1 < size;
@@ -281,7 +281,7 @@ public class HashTable<E> implements Collection<E> {
                 throw new NoSuchElementException("Достигнут конец таблицы");
             }
 
-            if (changesCount != CHANGES_COUNT) {
+            if (changesCount != initialChangesCount) {
                 throw new ConcurrentModificationException("Во время выполнения итератора таблица изменилась");
             }
 
