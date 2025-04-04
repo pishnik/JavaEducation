@@ -1,10 +1,11 @@
 package ru.java.karanin.list;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class List<T> {
+public class List<E> {
     // начало списка
-    private ListItem<T> head;
+    private ListItem<E> head;
 
     // размер списка
     private int size;
@@ -18,8 +19,8 @@ public class List<T> {
         return size;
     }
 
-    private ListItem<T> getItemByIndex(int index) {
-        ListItem<T> currentItem = head;
+    private ListItem<E> getItemByIndex(int index) {
+        ListItem<E> currentItem = head;
 
         for (int i = 0; i < index; i++) {
             currentItem = currentItem.getNextItem();
@@ -30,13 +31,13 @@ public class List<T> {
 
     // тупо вставка в конец списка, все это можно упростить заведя ссылку на конец списка tail
     // где можно хранить ссылку на конечный элемент
-    public void add(T data) {
+    public void add(E data) {
         // сейчас мы просто оборачиваем вставку по индексу длинны
         addByIndex(size, data);
     }
 
     // получить значение 1 элемента
-    public T getFirst() {
+    public E getFirst() {
         checkListEmpty();
 
         return head.getData();
@@ -44,7 +45,7 @@ public class List<T> {
 
     private void checkListEmpty() {
         if (size == 0) {
-            throw new IllegalStateException("Список пуст");
+            throw new NoSuchElementException("Список пуст");
         }
     }
 
@@ -58,7 +59,7 @@ public class List<T> {
     }
 
     // получить значение элемента по индексу
-    public T getDataByIndex(int index) {
+    public E getDataByIndex(int index) {
         // проверили границы
         checkIndex(index);
 
@@ -66,25 +67,25 @@ public class List<T> {
     }
 
     // установить значение элемента по индексу
-    public T setDataByIndex(int index, T newData) {
+    public E setDataByIndex(int index, E newData) {
         // проверили границы
         checkIndex(index);
 
-        ListItem<T> item = getItemByIndex(index);
-        T oldData = item.getData();
+        ListItem<E> item = getItemByIndex(index);
+        E oldData = item.getData();
         item.setData(newData);
 
         return oldData;
     }
 
-    public void addFirst(T data) {
+    public void addFirst(E data) {
         // создали элемент, началом устанавливаем новый элемент со ссылкой на старый head
         head = new ListItem<>(data, head);
         // увеличили размер списка
         size++;
     }
 
-    public void addByIndex(int index, T data) {
+    public void addByIndex(int index, E data) {
         // проверили границы
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException(String.format("Элемента с индексом %d не существует, индекс может быть в диапазоне [0, %d]", index, size));
@@ -97,7 +98,7 @@ public class List<T> {
         }
 
         // берем предыдущий
-        ListItem<T> previousItem = getItemByIndex(index - 1);
+        ListItem<E> previousItem = getItemByIndex(index - 1);
         // создали элемент, у него ссылка на следующий, а на него ссылается предыдущий
         previousItem.setNextItem(new ListItem<>(data, previousItem.getNextItem()));
         // увеличили размер
@@ -105,11 +106,11 @@ public class List<T> {
     }
 
     // удаление первого элемента
-    public T deleteFirst() {
+    public E deleteFirst() {
         checkListEmpty();
 
         // получили значение головы
-        T data = head.getData();
+        E data = head.getData();
         // переписали ссылку на голову из ссылки головы
         head = head.getNextItem();
         // уменьшили размер
@@ -119,7 +120,7 @@ public class List<T> {
     }
 
     // удалить элемент по индексу
-    public T deleteByIndex(int index) {
+    public E deleteByIndex(int index) {
         // проверили границы
         checkIndex(index);
 
@@ -128,9 +129,9 @@ public class List<T> {
             return deleteFirst();
         }
 
-        ListItem<T> previousItem = getItemByIndex(index - 1);
+        ListItem<E> previousItem = getItemByIndex(index - 1);
         // получили значение
-        T data = previousItem.getNextItem().getData();
+        E data = previousItem.getNextItem().getData();
         // ставим ссылку предыдущему на следующий за удаляемым
         previousItem.setNextItem(previousItem.getNextItem().getNextItem());
         // укорачиваем список
@@ -140,20 +141,20 @@ public class List<T> {
     }
 
     // удалить элемент по значению
-    public boolean deleteByData(T data) {
+    public boolean deleteByData(E data) {
         if (size == 0) {
             return false;
         }
 
         // начинаем проход по списку с начала
-        ListItem<T> item = head;
+        ListItem<E> item = head;
         // предыдущий у начала пустой
-        ListItem<T> previousItem = null;
+        ListItem<E> previousItem = null;
 
         // пока не пусто
         while (item != null) {
             // получаем значение
-            T itemData = item.getData();
+            E itemData = item.getData();
 
             // если значение нужное
             if (Objects.equals(itemData, data)) {
@@ -182,9 +183,9 @@ public class List<T> {
         return false;
     }
 
-    public List<T> copy() {
+    public List<E> copy() {
         // создали пустой список
-        List<T> copyList = new List<>();
+        List<E> copyList = new List<>();
 
         // если там ничего, пустоту и вернем
         if (size == 0) {
@@ -196,9 +197,9 @@ public class List<T> {
         // создаем копию головы
         copyList.head = new ListItem<>(head.getData());
         // в новом списке встаем на первый элемент
-        ListItem<T> copyListItem = copyList.head;
+        ListItem<E> copyListItem = copyList.head;
         // получаем следующий элемент оригинала
-        ListItem<T> item = head.getNextItem();
+        ListItem<E> item = head.getNextItem();
 
         // пока элемент оригинала не пустой
         while (item != null) {
@@ -220,14 +221,14 @@ public class List<T> {
         }
 
         // начинаем с первого элемента
-        ListItem<T> currentItem = head;
+        ListItem<E> currentItem = head;
         // предыдущий с начала будет пустым
-        ListItem<T> previousItem = null;
+        ListItem<E> previousItem = null;
 
         // пока в списке есть элементы
         while (currentItem != null) {
             // следующий элемент
-            ListItem<T> nextItem = currentItem.getNextItem();
+            ListItem<E> nextItem = currentItem.getNextItem();
             // устанавливаем предыдущий
             currentItem.setNextItem(previousItem);
             // предыдущий  = текущему
@@ -247,7 +248,7 @@ public class List<T> {
 
         StringBuilder stringBuilder = new StringBuilder("{");
 
-        for (ListItem<T> item = head; item != null; item = item.getNextItem()) {
+        for (ListItem<E> item = head; item != null; item = item.getNextItem()) {
             stringBuilder.append(item.getData()).append(", ");
         }
 

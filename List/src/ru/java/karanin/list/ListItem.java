@@ -1,34 +1,34 @@
 package ru.java.karanin.list;
 
-class ListItem<T> {
+class ListItem<E> {
     // значение
-    private T data;
+    private E data;
 
     // ссылка на следующий элемент списка
-    private ListItem<T> nextItem;
+    private ListItem<E> nextItem;
 
-    public ListItem(T data) {
+    public ListItem(E data) {
         this.data = data;
     }
 
-    public ListItem(T data, ListItem<T> nextItem) {
+    public ListItem(E data, ListItem<E> nextItem) {
         this.data = data;
         this.nextItem = nextItem;
     }
 
-    public T getData() {
+    public E getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(E data) {
         this.data = data;
     }
 
-    public ListItem<T> getNextItem() {
+    public ListItem<E> getNextItem() {
         return nextItem;
     }
 
-    public void setNextItem(ListItem<T> nextItem) {
+    public void setNextItem(ListItem<E> nextItem) {
         this.nextItem = nextItem;
     }
 }
