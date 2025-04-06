@@ -47,11 +47,7 @@ public class HashTable<E> implements Collection<E> {
     public boolean contains(Object o) {
         int index = getItemIndex(o);
 
-        if (lists[index] == null) {
-            return false;
-        }
-
-        return lists[index].contains(o);
+        return lists[index] != null && lists[index].contains(o);
     }
 
     @Override
@@ -143,7 +139,10 @@ public class HashTable<E> implements Collection<E> {
 
         // стираем элементы в массиве
         for (ArrayList<E> list : lists) {
-            list.clear();
+            // списка может не существовать
+            if (list != null) {
+                list.clear();
+            }
         }
 
         // обнулили длину
@@ -160,18 +159,23 @@ public class HashTable<E> implements Collection<E> {
         // мы оставляем только то что внутри коллекции, а там нет ничего
         // сносим все содержимое
         if (c.isEmpty()) {
-            clear();
+            if (size == 0) {
+                return false;
+            }
 
+            clear();
             return true;
         }
 
         boolean result = false;
 
         size = 0;
+
         // идем по спискам и сносим элементы, что не входят в коллекцию
         for (ArrayList<E> list : lists) {
             if (list != null) {
                 if (list.retainAll(c)) {
+                    changesCount++;
                     result = true;
                 }
 
@@ -184,6 +188,7 @@ public class HashTable<E> implements Collection<E> {
     }
 
     @Override
+    @SuppressWarnings("SuspiciousMethodCalls")
     public boolean removeAll(Collection c) {
         if (c == null) {
             throw new NullPointerException("Передана null коллекция");
@@ -193,15 +198,26 @@ public class HashTable<E> implements Collection<E> {
             return false;
         }
 
-        int oldSize = size;
+        // пока ничего не поменяли
+        boolean result = false;
 
-        for (Object element : c) {
-            while (contains(element)) {
-                remove(element);
+        // идем по спискам
+        for (ArrayList<E> list : lists) {
+            // если список есть
+            if (list != null) {
+                // из списка сносим все что передали
+                if (list.removeAll(c)) {
+                    // изменения были
+                    changesCount++;
+                    result = true;
+                }
+
+                // нам надо пересчитать длину после операции
+                size += list.size();
             }
         }
 
-        return oldSize != size;
+        return result;
     }
 
     @Override
@@ -224,24 +240,15 @@ public class HashTable<E> implements Collection<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
     public <T> T[] toArray(T[] a) {
         // если наш массив больше чем тот что нам дали
         if (size > a.length) {
-            T[] array = (T[]) Arrays.copyOf(a, size, a.getClass());
-            int i = 0;
-
-            for (E element : this) {
-                array[i] = (T) element;
-                i++;
-            }
-
-            return array;
+            return (T[]) toArray();
         }
 
         // копируем наш список в переданный массив
-        T[] resultArray = (T[]) Arrays.copyOf(toArray(), size, a.getClass());
-        System.arraycopy(resultArray, 0, a, 0, size);
+        System.arraycopy(toArray(), 0, a, 0, size);
 
         // если массив имеет больше элементов, чем список,
         // элемент в массиве, следующий сразу за концом списка, устанавливается в значение null
@@ -267,12 +274,17 @@ public class HashTable<E> implements Collection<E> {
 
     // внутренний класс итератора
     private class HashTableIterator implements Iterator<E> {
-        private int currentIndex = -1;
+        // индекс элемента
+        private int currentItemIndex = -1;
+        // индекс списка
+        private int listIndex;
+        // индекс элемента в списке
+        private int itemIndex;
 
         private final int initialChangesCount = changesCount;
 
         public boolean hasNext() {
-            return currentIndex + 1 < size;
+            return currentItemIndex + 1 < size;
         }
 
         // переход на следующий элемент
@@ -285,21 +297,21 @@ public class HashTable<E> implements Collection<E> {
                 throw new ConcurrentModificationException("Во время выполнения итератора таблица изменилась");
             }
 
-            ++currentIndex;
-
-            int index = 0;
+            ++currentItemIndex;
+            ++itemIndex;
             E nextItem = null;
 
-            // пробегаем поэлементно
-            for (ArrayList<E> list : lists) {
-                if (list != null) {
-                    for (E item : list) {
-                        if (index == currentIndex) {
-                            nextItem = item;
-                        }
-                        index++;
+            while (listIndex < lists.length) {
+                if (lists[listIndex] != null) {
+                    if (itemIndex < lists[listIndex].size()) {
+                        nextItem = lists[listIndex].get(itemIndex);
+                        break;
                     }
+
+                    itemIndex = 0;
                 }
+
+                ++listIndex;
             }
 
             return nextItem;
