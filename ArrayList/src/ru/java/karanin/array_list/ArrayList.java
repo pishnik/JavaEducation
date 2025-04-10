@@ -191,17 +191,17 @@ public class ArrayList<E> implements List<E> {
             return false;
         }
 
-        boolean listChanged = false;
+        boolean isChanged = false;
 
         //  идем по элементам
         for (int i = size - 1; i >= 0; i--) {
             if (c.contains(items[i])) {
                 remove(i);
-                listChanged = true;
+                isChanged = true;
             }
         }
 
-        return listChanged;
+        return isChanged;
     }
 
     @Override
@@ -210,7 +210,7 @@ public class ArrayList<E> implements List<E> {
             throw new NullPointerException("Передана null коллекция");
         }
 
-        boolean listChanged = false;
+        boolean isChanged = false;
 
         //  идем по элементам
         for (int i = size - 1; i >= 0; i--) {
@@ -220,11 +220,11 @@ public class ArrayList<E> implements List<E> {
                 remove(i);
 
                 // было хотя бы одно удаление - список поменялся
-                listChanged = true;
+                isChanged = true;
             }
         }
 
-        return listChanged;
+        return isChanged;
     }
 
     @Override

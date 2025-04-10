@@ -167,7 +167,7 @@ public class HashTable<E> implements Collection<E> {
             return true;
         }
 
-        boolean result = false;
+        boolean isChanged = false;
 
         size = 0;
 
@@ -176,7 +176,7 @@ public class HashTable<E> implements Collection<E> {
             if (list != null) {
                 if (list.retainAll(c)) {
                     changesCount++;
-                    result = true;
+                    isChanged = true;
                 }
 
                 // нам надо пересчитать длину после операции
@@ -184,7 +184,7 @@ public class HashTable<E> implements Collection<E> {
             }
         }
 
-        return result;
+        return isChanged;
     }
 
     @Override
@@ -199,7 +199,9 @@ public class HashTable<E> implements Collection<E> {
         }
 
         // пока ничего не поменяли
-        boolean result = false;
+        boolean isChanged = false;
+
+        size = 0;
 
         // идем по спискам
         for (ArrayList<E> list : lists) {
@@ -209,7 +211,7 @@ public class HashTable<E> implements Collection<E> {
                 if (list.removeAll(c)) {
                     // изменения были
                     changesCount++;
-                    result = true;
+                    isChanged = true;
                 }
 
                 // нам надо пересчитать длину после операции
@@ -217,7 +219,7 @@ public class HashTable<E> implements Collection<E> {
             }
         }
 
-        return result;
+        return isChanged;
     }
 
     @Override
@@ -244,7 +246,7 @@ public class HashTable<E> implements Collection<E> {
     public <T> T[] toArray(T[] a) {
         // если наш массив больше чем тот что нам дали
         if (size > a.length) {
-            return (T[]) toArray();
+            return (T[]) Arrays.copyOf(toArray(), size, a.getClass());
         }
 
         // копируем наш список в переданный массив
@@ -275,7 +277,7 @@ public class HashTable<E> implements Collection<E> {
     // внутренний класс итератора
     private class HashTableIterator implements Iterator<E> {
         // индекс элемента
-        private int currentItemIndex = -1;
+        private int iterationIndex = -1;
         // индекс списка
         private int listIndex;
         // индекс элемента в списке
@@ -284,7 +286,7 @@ public class HashTable<E> implements Collection<E> {
         private final int initialChangesCount = changesCount;
 
         public boolean hasNext() {
-            return currentItemIndex + 1 < size;
+            return iterationIndex + 1 < size;
         }
 
         // переход на следующий элемент
@@ -297,7 +299,7 @@ public class HashTable<E> implements Collection<E> {
                 throw new ConcurrentModificationException("Во время выполнения итератора таблица изменилась");
             }
 
-            ++currentItemIndex;
+            ++iterationIndex;
             ++itemIndex;
             E nextItem = null;
 
