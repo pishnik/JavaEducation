@@ -55,7 +55,7 @@ public class Graph<T> {
         paths[node2Index][node1Index] = 1;
     }
 
-    public void breadthFirstTraversal(Consumer<T> action) {
+    public void traversalBreadthFirst(Consumer<T> action) {
         if (size == 0) {
             return;
         }
@@ -86,7 +86,7 @@ public class Graph<T> {
         }
     }
 
-    public void depthFirstTraversal(Consumer<T> action) {
+    public void traversalDepthFirst(Consumer<T> action) {
         if (size == 0) {
             return;
         }
@@ -115,15 +115,15 @@ public class Graph<T> {
         }
     }
 
-    public void depthFirstTraversalRecursive(Consumer<T> action) {
+    public void traversalDepthFirstRecursive(Consumer<T> action) {
         boolean[] visited = new boolean[size];
 
         for (int i = 0; i < size; i++) {
-            depthFirstTraversal(i, visited, action);
+            traverseDepthFirstRecursive(i, visited, action);
         }
     }
 
-    private void depthFirstTraversal(Integer nodeIndex, boolean[] visited, Consumer<T> action) {
+    private void traverseDepthFirstRecursive(Integer nodeIndex, boolean[] visited, Consumer<T> action) {
         if (visited[nodeIndex]) {
             return;
         }
@@ -133,7 +133,7 @@ public class Graph<T> {
 
         for (int j = 0; j < size; j++) {
             if (paths[nodeIndex][j] > 0 && !visited[j]) {
-                depthFirstTraversal(j, visited, action);
+                traverseDepthFirstRecursive(j, visited, action);
             }
         }
     }

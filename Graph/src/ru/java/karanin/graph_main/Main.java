@@ -26,14 +26,14 @@ public class Main {
         graph.addPath(7, 3);
 
         System.out.println("Обход в ширину:");
-        graph.breadthFirstTraversal(System.out::println);
+        graph.traversalBreadthFirst(System.out::println);
         System.out.println();
 
         System.out.println("Обход в глубину:");
-        graph.depthFirstTraversal(System.out::println);
+        graph.traversalDepthFirst(System.out::println);
         System.out.println();
 
         System.out.println("Обход в глубину с рекурсией:");
-        graph.depthFirstTraversalRecursive(System.out::println);
+        graph.traversalDepthFirstRecursive(System.out::println);
     }
 }
