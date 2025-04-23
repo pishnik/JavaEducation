@@ -1,61 +1,44 @@
 package ru.java.karanin.graph;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Queue;
 import java.util.function.Consumer;
 
-public class Graph<T> {
+public class Graph<E> {
     // вершины
-    private final T[] nodes;
+    private final E[] vertices;
     // ребра
-    private final int[][] paths;
+    private final int[][] edges;
     // размер
-    private int size;
+    private final int size;
 
-    @SuppressWarnings("unchecked")
-    public Graph(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException(String.format("Вместимость графа должна быть больше 0, передано значение: %d", capacity));
+    public Graph(E[] vertices, int[][] edges) {
+        if (vertices.length == 0) {
+            throw new IllegalArgumentException("Массив вершин графа пустой");
+        }
+
+        if (edges.length == 0) {
+            throw new IllegalArgumentException("Массив ребер графа пустой");
+        }
+
+        if (edges.length != vertices.length) {
+            throw new IllegalArgumentException(String.format("Размерность матрицы ребер графа (edges.length = %d) не соответствует количеству вершин графа (vertices.length = %d)", edges.length, vertices.length));
         }
 
         // массив вершин
-        nodes = (T[]) new Object[capacity];
+        this.vertices = vertices;
         // массив ребер
-        paths = new int[capacity][capacity];
-    }
-
-    public Graph() {
-        this(10);
+        this.edges = edges;
+        // размер
+        size = vertices.length;
     }
 
     public int size() {
         return size;
     }
 
-    public void addNode(T value) {
-        if (size >= nodes.length) {
-            throw new IllegalStateException(String.format("Превышение вместимости графа %d", size));
-        }
-
-        int nodeIndex = size;
-
-        nodes[nodeIndex] = value;
-        size++;
-    }
-
-    public void addPath(int node1Index, int node2Index) {
-        if (node1Index < 0 || node1Index >= size) {
-            throw new IndexOutOfBoundsException(String.format("Индекс первой вершины %d не входит в диапазон [0, %d])", node1Index, size - 1));
-        }
-
-        if (node2Index < 0 || node2Index >= size) {
-            throw new IndexOutOfBoundsException(String.format("Индекс второй вершины %d не входит в диапазон [0, %d])", node2Index, size - 1));
-        }
-
-        paths[node1Index][node2Index] = 1;
-        paths[node2Index][node1Index] = 1;
-    }
-
-    public void traversalBreadthFirst(Consumer<T> action) {
+    public void traversalBreadthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -63,30 +46,32 @@ public class Graph<T> {
         boolean[] visited = new boolean[size];
 
         // очередь
-        ArrayDeque<Integer> queue = new ArrayDeque<>(size);
+        Queue<Integer> queue = new ArrayDeque<>(size);
 
         for (int i = 0; i < size; i++) {
-            if (!visited[i]) {
-                queue.add(i);
+            if (visited[i]) {
+                continue;
+            }
 
-                while (!queue.isEmpty()) {
-                    Integer currentNodeIndex = queue.pollFirst();
+            queue.add(i);
+            visited[i] = true;
 
-                    action.accept(nodes[currentNodeIndex]);
+            while (!queue.isEmpty()) {
+                Integer currentVertexIndex = queue.poll();
+                action.accept(vertices[currentVertexIndex]);
 
-                    visited[currentNodeIndex] = true;
-
-                    for (int j = 0; j < size; j++) {
-                        if (paths[currentNodeIndex][j] > 0 && !visited[j] && !queue.contains(j)) {
-                            queue.add(j);
-                        }
+                for (int j = 0; j < size; j++) {
+                    if (edges[currentVertexIndex][j] != 0 && !visited[j]) {
+                        queue.add(j);
+                        visited[j] = true;
                     }
                 }
             }
+
         }
     }
 
-    public void traversalDepthFirst(Consumer<T> action) {
+    public void traversalDepthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -94,28 +79,31 @@ public class Graph<T> {
         boolean[] visited = new boolean[size];
 
         // нам нужен стек
-        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        Deque<Integer> stack = new ArrayDeque<>();
 
         for (int i = 0; i < size; i++) {
-            if (!visited[i]) {
-                stack.push(i);
+            if (visited[i]) {
+                continue;
+            }
 
-                while (!stack.isEmpty()) {
-                    Integer currentNodeIndex = stack.pop();
-                    action.accept(nodes[currentNodeIndex]);
-                    visited[currentNodeIndex] = true;
+            stack.push(i);
+            visited[i] = true;
 
-                    for (int j = size - 1; j >= 0; j--) {
-                        if (paths[currentNodeIndex][j] > 0 && !visited[j] && !stack.contains(j)) {
-                            stack.push(j);
-                        }
+            while (!stack.isEmpty()) {
+                Integer currentVertexIndex = stack.pop();
+                action.accept(vertices[currentVertexIndex]);
+
+                for (int j = size - 1; j >= 0; j--) {
+                    if (edges[currentVertexIndex][j] != 0 && !visited[j]) {
+                        stack.push(j);
+                        visited[j] = true;
                     }
                 }
             }
         }
     }
 
-    public void traversalDepthFirstRecursive(Consumer<T> action) {
+    public void traversalDepthFirstRecursive(Consumer<E> action) {
         boolean[] visited = new boolean[size];
 
         for (int i = 0; i < size; i++) {
@@ -123,17 +111,17 @@ public class Graph<T> {
         }
     }
 
-    private void traverseDepthFirstRecursive(Integer nodeIndex, boolean[] visited, Consumer<T> action) {
-        if (visited[nodeIndex]) {
+    private void traverseDepthFirstRecursive(Integer vertexIndex, boolean[] visited, Consumer<E> action) {
+        if (visited[vertexIndex]) {
             return;
         }
 
-        action.accept(nodes[nodeIndex]);
-        visited[nodeIndex] = true;
+        action.accept(vertices[vertexIndex]);
+        visited[vertexIndex] = true;
 
-        for (int j = 0; j < size; j++) {
-            if (paths[nodeIndex][j] > 0 && !visited[j]) {
-                traverseDepthFirstRecursive(j, visited, action);
+        for (int i = 0; i < size; i++) {
+            if (edges[vertexIndex][i] != 0 && !visited[i]) {
+                traverseDepthFirstRecursive(i, visited, action);
             }
         }
     }

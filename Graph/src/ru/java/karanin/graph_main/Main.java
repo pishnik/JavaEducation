@@ -4,26 +4,30 @@ import ru.java.karanin.graph.Graph;
 
 public class Main {
     public static void main(String[] args) {
-        Graph<String> graph = new Graph<>();
 
-        graph.addNode("Кемерово");
-        graph.addNode("Белово");
-        graph.addNode("Новокузнецк");
-        graph.addNode("Новосибирск");
-        graph.addNode("Томск");
-        graph.addNode("Киселевск");
-        graph.addNode("Ленинск-Кузнецкий");
-        graph.addNode("Юрга");
+        String[] towns = new String[]{
+                "Кемерово",
+                "Белово",
+                "Новокузнецк",
+                "Новосибирск",
+                "Томск",
+                "Киселевск",
+                "Ленинск-Кузнецкий",
+                "Юрга"};
 
-        graph.addPath(0, 3);
-        graph.addPath(0, 4);
-        graph.addPath(0, 6);
-        graph.addPath(1, 2);
-        graph.addPath(1, 5);
-        graph.addPath(6, 1);
-        graph.addPath(3, 4);
-        graph.addPath(0, 7);
-        graph.addPath(7, 3);
+        int[][] roads = new int[towns.length][towns.length];
+
+        roads[0][3] = 1;
+        roads[0][4] = 1;
+        roads[0][6] = 1;
+        roads[1][2] = 1;
+        roads[1][5] = 1;
+        roads[6][1] = 1;
+        roads[3][4] = 1;
+        roads[0][7] = 1;
+        roads[7][3] = 1;
+
+        Graph<String> graph = new Graph<>(towns, roads);
 
         System.out.println("Обход в ширину:");
         graph.traversalBreadthFirst(System.out::println);
