@@ -1,4 +1,4 @@
-package ru.java.karanin.person;
+package ru.java.karanin.lambda_expression_person;
 
 public class Person {
     // имя
@@ -6,8 +6,8 @@ public class Person {
     // возраст
     private final int age;
 
-    public Person(String fistName, int age) {
-        this.firstName = fistName;
+    public Person(String firstName, int age) {
+        this.firstName = firstName;
         this.age = age;
     }
 
