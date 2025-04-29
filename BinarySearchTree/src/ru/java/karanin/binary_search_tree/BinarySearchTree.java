@@ -113,7 +113,7 @@ public class BinarySearchTree<E> {
         return false;
     }
 
-    private void replaceNodes(TreeNode<E> parentNode, TreeNode<E> currentNode, TreeNode<E> childNode) {
+    private void replaceNode(TreeNode<E> parentNode, TreeNode<E> currentNode, TreeNode<E> childNode) {
         if (parentNode == null) {
             root = childNode;
         } else if (parentNode.getLeft() == currentNode) {
@@ -160,7 +160,7 @@ public class BinarySearchTree<E> {
         if (currentNode.getLeft() == null || currentNode.getRight() == null) {
             TreeNode<E> childNode = (currentNode.getLeft() != null) ? currentNode.getLeft() : currentNode.getRight();
 
-            replaceNodes(parentNode, currentNode, childNode);
+            replaceNode(parentNode, currentNode, childNode);
         } else {
             // есть оба узла
             TreeNode<E> minLeftParentNode = currentNode;
@@ -180,7 +180,7 @@ public class BinarySearchTree<E> {
             minLeftNode.setLeft(currentNode.getLeft());
             minLeftNode.setRight(currentNode.getRight());
 
-            replaceNodes(parentNode, currentNode, minLeftNode);
+            replaceNode(parentNode, currentNode, minLeftNode);
         }
 
         // уменьшим размер
@@ -189,7 +189,7 @@ public class BinarySearchTree<E> {
         return true;
     }
 
-    public void traversalBreadthFirst(Consumer<E> action) {
+    public void traverseBreadthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -213,22 +213,22 @@ public class BinarySearchTree<E> {
         }
     }
 
-    private void traversalDepthFirstRecursive(TreeNode<E> node, Consumer<E> action) {
+    private void traverseDepthFirstRecursive(TreeNode<E> node, Consumer<E> action) {
         if (node == null) {
             return;
         }
 
         action.accept(node.getValue());
 
-        traversalDepthFirstRecursive(node.getLeft(), action);
-        traversalDepthFirstRecursive(node.getRight(), action);
+        traverseDepthFirstRecursive(node.getLeft(), action);
+        traverseDepthFirstRecursive(node.getRight(), action);
     }
 
-    public void traversalDepthFirstRecursive(Consumer<E> action) {
-        traversalDepthFirstRecursive(root, action);
+    public void traverseDepthFirstRecursive(Consumer<E> action) {
+        traverseDepthFirstRecursive(root, action);
     }
 
-    public void traversalDepthFirst(Consumer<E> action) {
+    public void traverseDepthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -253,13 +253,13 @@ public class BinarySearchTree<E> {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("{");
-
-        traversalBreadthFirst(value -> stringBuilder.append(value).append(", "));
-
-        if (stringBuilder.length() > 1) {
-            stringBuilder.setLength(stringBuilder.length() - 2);
+        if (size == 0) {
+            return "{}";
         }
+
+        StringBuilder stringBuilder = new StringBuilder("{");
+        traverseBreadthFirst(value -> stringBuilder.append(value).append(", "));
+        stringBuilder.setLength(stringBuilder.length() - 2);
 
         return stringBuilder.append('}').toString();
     }

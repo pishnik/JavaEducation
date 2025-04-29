@@ -38,7 +38,7 @@ public class Graph<E> {
         return size;
     }
 
-    public void traversalBreadthFirst(Consumer<E> action) {
+    public void traverseBreadthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -71,7 +71,7 @@ public class Graph<E> {
         }
     }
 
-    public void traversalDepthFirst(Consumer<E> action) {
+    public void traverseDepthFirst(Consumer<E> action) {
         if (size == 0) {
             return;
         }
@@ -103,7 +103,7 @@ public class Graph<E> {
         }
     }
 
-    public void traversalDepthFirstRecursive(Consumer<E> action) {
+    public void traverseDepthFirstRecursive(Consumer<E> action) {
         boolean[] visited = new boolean[size];
 
         for (int i = 0; i < size; i++) {

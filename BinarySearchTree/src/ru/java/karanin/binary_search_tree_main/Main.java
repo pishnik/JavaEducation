@@ -49,12 +49,12 @@ public class Main {
         System.out.printf("Обход в ширину: %s%n", tree);
 
         System.out.println("Обход в ширину");
-        tree.traversalBreadthFirst(System.out::println);
+        tree.traverseBreadthFirst(System.out::println);
 
         System.out.println("Обход в глубину");
-        tree.traversalDepthFirst(System.out::println);
+        tree.traverseDepthFirst(System.out::println);
 
         System.out.println("Обход в глубину с рекурсией");
-        tree.traversalDepthFirstRecursive(System.out::println);
+        tree.traverseDepthFirstRecursive(System.out::println);
     }
 }

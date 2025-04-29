@@ -30,14 +30,14 @@ public class Main {
         Graph<String> graph = new Graph<>(towns, roads);
 
         System.out.println("Обход в ширину:");
-        graph.traversalBreadthFirst(System.out::println);
+        graph.traverseBreadthFirst(System.out::println);
         System.out.println();
 
         System.out.println("Обход в глубину:");
-        graph.traversalDepthFirst(System.out::println);
+        graph.traverseDepthFirst(System.out::println);
         System.out.println();
 
         System.out.println("Обход в глубину с рекурсией:");
-        graph.traversalDepthFirstRecursive(System.out::println);
+        graph.traverseDepthFirstRecursive(System.out::println);
     }
 }
