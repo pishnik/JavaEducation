@@ -4,8 +4,7 @@ import ru.java.karanin.graph.Graph;
 
 public class Main {
     public static void main(String[] args) {
-
-        String[] towns = new String[]{
+        String[] towns = {
                 "Кемерово",
                 "Белово",
                 "Новокузнецк",
@@ -13,7 +12,8 @@ public class Main {
                 "Томск",
                 "Киселевск",
                 "Ленинск-Кузнецкий",
-                "Юрга"};
+                "Юрга"
+        };
 
         int[][] roads = new int[towns.length][towns.length];
 

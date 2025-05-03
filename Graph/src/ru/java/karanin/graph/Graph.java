@@ -1,6 +1,7 @@
 package ru.java.karanin.graph;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.function.Consumer;
@@ -10,8 +11,6 @@ public class Graph<E> {
     private final E[] vertices;
     // ребра
     private final int[][] edges;
-    // размер
-    private final int size;
 
     public Graph(E[] vertices, int[][] edges) {
         if (vertices.length == 0) {
@@ -26,29 +25,31 @@ public class Graph<E> {
             throw new IllegalArgumentException(String.format("Размерность матрицы ребер графа (edges.length = %d) не соответствует количеству вершин графа (vertices.length = %d)", edges.length, vertices.length));
         }
 
+        if (edges.length != edges[0].length) {
+            throw new IllegalArgumentException(String.format("Матрица ребер графа должна быть квадратной, передана размера %dx%d", edges.length, edges[0].length));
+        }
+
         // массив вершин
-        this.vertices = vertices;
+        this.vertices = Arrays.copyOf(vertices, vertices.length);
         // массив ребер
-        this.edges = edges;
-        // размер
-        size = vertices.length;
+        this.edges = edges.clone();
     }
 
     public int size() {
-        return size;
+        return vertices.length;
     }
 
     public void traverseBreadthFirst(Consumer<E> action) {
-        if (size == 0) {
+        if (vertices.length == 0) {
             return;
         }
 
-        boolean[] visited = new boolean[size];
+        boolean[] visited = new boolean[vertices.length];
 
         // очередь
-        Queue<Integer> queue = new ArrayDeque<>(size);
+        Queue<Integer> queue = new ArrayDeque<>(vertices.length);
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < vertices.length; i++) {
             if (visited[i]) {
                 continue;
             }
@@ -57,31 +58,30 @@ public class Graph<E> {
             visited[i] = true;
 
             while (!queue.isEmpty()) {
-                Integer currentVertexIndex = queue.poll();
+                int currentVertexIndex = queue.poll();
                 action.accept(vertices[currentVertexIndex]);
 
-                for (int j = 0; j < size; j++) {
+                for (int j = 0; j < vertices.length; j++) {
                     if (edges[currentVertexIndex][j] != 0 && !visited[j]) {
                         queue.add(j);
                         visited[j] = true;
                     }
                 }
             }
-
         }
     }
 
     public void traverseDepthFirst(Consumer<E> action) {
-        if (size == 0) {
+        if (vertices.length == 0) {
             return;
         }
 
-        boolean[] visited = new boolean[size];
+        boolean[] visited = new boolean[vertices.length];
 
         // нам нужен стек
         Deque<Integer> stack = new ArrayDeque<>();
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < vertices.length; i++) {
             if (visited[i]) {
                 continue;
             }
@@ -90,10 +90,10 @@ public class Graph<E> {
             visited[i] = true;
 
             while (!stack.isEmpty()) {
-                Integer currentVertexIndex = stack.pop();
+                int currentVertexIndex = stack.pop();
                 action.accept(vertices[currentVertexIndex]);
 
-                for (int j = size - 1; j >= 0; j--) {
+                for (int j = vertices.length - 1; j >= 0; j--) {
                     if (edges[currentVertexIndex][j] != 0 && !visited[j]) {
                         stack.push(j);
                         visited[j] = true;
@@ -104,9 +104,9 @@ public class Graph<E> {
     }
 
     public void traverseDepthFirstRecursive(Consumer<E> action) {
-        boolean[] visited = new boolean[size];
+        boolean[] visited = new boolean[vertices.length];
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < vertices.length; i++) {
             traverseDepthFirstRecursive(i, visited, action);
         }
     }
@@ -119,7 +119,7 @@ public class Graph<E> {
         action.accept(vertices[vertexIndex]);
         visited[vertexIndex] = true;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < vertices.length; i++) {
             if (edges[vertexIndex][i] != 0 && !visited[i]) {
                 traverseDepthFirstRecursive(i, visited, action);
             }
