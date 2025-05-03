@@ -45,7 +45,7 @@ public class Main {
 
         System.out.println("Список несовершеннолетних:");
         List<Person> underagePersonsList = personsList.stream()
-                .filter(person -> person.getAge() < 10)
+                .filter(person -> person.getAge() < 18)
                 .toList();
         underagePersonsList.forEach(person -> System.out.println(person.getFirstName()));
         System.out.println();
@@ -57,9 +57,9 @@ public class Main {
         System.out.println();
 
         System.out.println("Список уникальных имен и средний возраст:");
-        Map<String, Double> uniqueNamesAverageAgeList = personsList.stream()
+        Map<String, Double> uniqueNamesAverageAges = personsList.stream()
                 .collect(Collectors.groupingBy(Person::getFirstName, Collectors.averagingInt(Person::getAge)));
-        uniqueNamesAverageAgeList.forEach((firstName, averageAge) -> System.out.println(firstName + " = " + averageAge));
+        uniqueNamesAverageAges.forEach((firstName, averageAge) -> System.out.println(firstName + " = " + averageAge));
         System.out.println();
 
         System.out.println("Молодежь:");
@@ -76,20 +76,28 @@ public class Main {
         int numbersCount = scanner.nextInt();
 
         System.out.println("Квадратные корни чисел:");
-        DoubleStream.iterate(0, x -> x + 1).map(Math::sqrt).limit(numbersCount).forEach(sqrt -> System.out.printf("%.2f%n", sqrt));
+        DoubleStream.iterate(0, x -> x + 1)
+                .map(Math::sqrt)
+                .limit(numbersCount)
+                .forEach(sqrt -> System.out.printf("%.2f%n", sqrt));
         System.out.println();
 
         System.out.printf("Первые %d чисел Фибоначчи:%n", numbersCount);
+        printFibonacciNumbers(numbersCount);
+    }
+
+    public static void printFibonacciNumbers(int numbersCount) {
         //Stream.iterate(new int[]{1, 0, 1}, numbers -> new int[]{numbers[0], numbers[2], numbers[1] + numbers[2]}).limit(numbersCount).forEach(numbers -> System.out.print(numbers[1] + " "));
         int[] pair = {0, 1};
         IntStream.iterate(0, number -> {
-                    number = pair[1];
+                    int prevNumber = pair[1];
                     int nextNumber = pair[0] + pair[1];
                     pair[0] = pair[1];
                     pair[1] = nextNumber;
 
-                    return number;
-                }).limit(numbersCount)
+                    return prevNumber;
+                })
+                .limit(numbersCount)
                 .forEach(number -> System.out.print(number + " "));
     }
 }
