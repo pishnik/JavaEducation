@@ -1,6 +1,6 @@
-package ru.java.karanin.temperature_converter_view;
+package ru.java.karanin.temperature_converter.view;
 
-import ru.java.karanin.temperature_converter_model.TemperatureScale;
+import ru.java.karanin.temperature_converter.model.TemperatureScale;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -8,17 +8,17 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class TemperatureDesktopView implements TemperatureView {
-    JFrame frame = new JFrame("Конвертер температуры");
+    private JFrame frame;
 
-    private final JTextField temperature = new JTextField();
+    private JTextField temperature;
 
     private JTextField convertedTemperature;
 
-    private final JComboBox<TemperatureScale> scalesFrom = new JComboBox<>();
+    private JComboBox<TemperatureScale> scalesFrom;
 
-    private final JComboBox<TemperatureScale> scalesTo = new JComboBox<>();
+    private JComboBox<TemperatureScale> scalesTo;
 
-    private final JButton convertButton = new JButton("Конвертировать");
+    private JButton convertButton;
 
     public TemperatureDesktopView() {
     }
@@ -26,6 +26,7 @@ public class TemperatureDesktopView implements TemperatureView {
     @Override
     public void start() {
         SwingUtilities.invokeLater(() -> {
+            frame = new JFrame("Конвертер температуры");
             frame.setSize(400, 200);
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
@@ -39,7 +40,7 @@ public class TemperatureDesktopView implements TemperatureView {
             mainPanel.add(new JLabel("Исходное значение"));
             mainPanel.add(new JLabel("Преобразованное значение"));
 
-            //temperature = new JTextField();
+            temperature = new JTextField();
             mainPanel.add(temperature);
 
             convertedTemperature = new JTextField();
@@ -48,6 +49,9 @@ public class TemperatureDesktopView implements TemperatureView {
 
             mainPanel.add(new JLabel("Из шкалы"));
             mainPanel.add(new JLabel("В шкалу"));
+
+            scalesFrom = new JComboBox<>();
+            scalesTo = new JComboBox<>();
 
             for (TemperatureScale scale : TemperatureScale.values()) {
                 scalesFrom.addItem(scale);
@@ -64,6 +68,7 @@ public class TemperatureDesktopView implements TemperatureView {
             JPanel buttonPanel = new JPanel(new GridBagLayout());
             buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+            convertButton = new JButton("Конвертировать");
             convertButton.setEnabled(false);
             buttonPanel.add(convertButton);
             frame.add(buttonPanel, BorderLayout.SOUTH);
@@ -83,7 +88,7 @@ public class TemperatureDesktopView implements TemperatureView {
     }
 
     @Override
-    public Double getTemperature() {
+    public double getTemperature() {
         return Double.parseDouble(temperature.getText());
     }
 
@@ -105,23 +110,27 @@ public class TemperatureDesktopView implements TemperatureView {
 
     @Override
     public void setPresenterCallbacks(Runnable onConvertClicked, Runnable onTemperatureChange) {
-        convertButton.addActionListener(e -> onConvertClicked.run());
-        //temperature.addActionListener(e -> onTemperatureChange.run());
-        temperature.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                checkTemperatureValue();
-            }
+        if (onConvertClicked != null) {
+            convertButton.addActionListener(e -> onConvertClicked.run());
+        }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                checkTemperatureValue();
-            }
+        if (onTemperatureChange != null) {
+            temperature.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    checkTemperatureValue();
+                }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                checkTemperatureValue();
-            }
-        });
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    checkTemperatureValue();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    checkTemperatureValue();
+                }
+            });
+        }
     }
 }

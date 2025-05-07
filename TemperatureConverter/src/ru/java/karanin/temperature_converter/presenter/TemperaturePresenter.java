@@ -1,4 +1,4 @@
-package ru.java.karanin.temperature_converter_presenter;
+package ru.java.karanin.temperature_converter.presenter;
 
 public interface TemperaturePresenter {
     void start();

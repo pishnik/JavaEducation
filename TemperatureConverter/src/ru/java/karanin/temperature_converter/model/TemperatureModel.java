@@ -1,4 +1,4 @@
-package ru.java.karanin.temperature_converter_model;
+package ru.java.karanin.temperature_converter.model;
 
 public interface TemperatureModel {
     void convertTemperature(double temperature, TemperatureScale fromScale, TemperatureScale toScale);

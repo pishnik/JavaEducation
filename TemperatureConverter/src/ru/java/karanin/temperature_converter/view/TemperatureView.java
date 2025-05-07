@@ -1,6 +1,6 @@
-package ru.java.karanin.temperature_converter_view;
+package ru.java.karanin.temperature_converter.view;
 
-import ru.java.karanin.temperature_converter_model.TemperatureScale;
+import ru.java.karanin.temperature_converter.model.TemperatureScale;
 
 public interface TemperatureView {
     void start();
@@ -9,7 +9,7 @@ public interface TemperatureView {
 
     void showError(String errorMessage);
 
-    Double getTemperature();
+    double getTemperature();
 
     TemperatureScale getScaleFrom();
 

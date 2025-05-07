@@ -1,12 +1,11 @@
-package ru.java.karanin.temperature_converter_presenter;
+package ru.java.karanin.temperature_converter.presenter;
 
-import ru.java.karanin.temperature_converter_model.TemperatureModel;
-import ru.java.karanin.temperature_converter_model.TemperatureScale;
-import ru.java.karanin.temperature_converter_view.TemperatureView;
+import ru.java.karanin.temperature_converter.model.TemperatureModel;
+import ru.java.karanin.temperature_converter.model.TemperatureScale;
+import ru.java.karanin.temperature_converter.view.TemperatureView;
 
 public class TemperaturePresenterImpl implements TemperaturePresenter {
     private final TemperatureModel model;
-
     private final TemperatureView view;
 
     public TemperaturePresenterImpl(TemperatureModel model, TemperatureView view) {

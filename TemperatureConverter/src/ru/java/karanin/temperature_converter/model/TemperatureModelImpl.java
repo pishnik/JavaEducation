@@ -1,4 +1,4 @@
-package ru.java.karanin.temperature_converter_model;
+package ru.java.karanin.temperature_converter.model;
 
 public class TemperatureModelImpl implements TemperatureModel {
     private double convertedTemperature;
