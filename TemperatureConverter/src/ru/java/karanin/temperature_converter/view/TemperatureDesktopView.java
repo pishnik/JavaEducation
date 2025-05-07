@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class TemperatureDesktopView implements TemperatureView {
     private JFrame frame;
@@ -20,61 +21,61 @@ public class TemperatureDesktopView implements TemperatureView {
 
     private JButton convertButton;
 
-    public TemperatureDesktopView() {
-    }
-
     @Override
     public void start() {
-        SwingUtilities.invokeLater(() -> {
-            frame = new JFrame("Конвертер температуры");
-            frame.setSize(400, 200);
-            frame.setResizable(false);
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            frame.setVisible(true);
-            frame.setLayout(new BorderLayout(5, 5));
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                frame = new JFrame("Конвертер температуры");
+                frame.setSize(400, 200);
+                frame.setResizable(false);
+                frame.setLocationRelativeTo(null);
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                frame.setLayout(new BorderLayout(5, 5));
 
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new GridLayout(4, 2, 5, 5));
-            mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            mainPanel.add(new JLabel("Исходное значение"));
-            mainPanel.add(new JLabel("Преобразованное значение"));
+                JPanel mainPanel = new JPanel();
+                mainPanel.setLayout(new GridLayout(4, 2, 5, 5));
+                mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                mainPanel.add(new JLabel("Исходное значение"));
+                mainPanel.add(new JLabel("Преобразованное значение"));
 
-            temperature = new JTextField();
-            mainPanel.add(temperature);
+                temperature = new JTextField();
+                mainPanel.add(temperature);
 
-            convertedTemperature = new JTextField();
-            convertedTemperature.setEditable(false);
-            mainPanel.add(convertedTemperature);
+                convertedTemperature = new JTextField();
+                convertedTemperature.setEditable(false);
+                mainPanel.add(convertedTemperature);
 
-            mainPanel.add(new JLabel("Из шкалы"));
-            mainPanel.add(new JLabel("В шкалу"));
+                mainPanel.add(new JLabel("Из шкалы"));
+                mainPanel.add(new JLabel("В шкалу"));
 
-            scalesFrom = new JComboBox<>();
-            scalesTo = new JComboBox<>();
+                scalesFrom = new JComboBox<>();
+                scalesTo = new JComboBox<>();
 
-            for (TemperatureScale scale : TemperatureScale.values()) {
-                scalesFrom.addItem(scale);
-                scalesTo.addItem(scale);
-            }
+                for (TemperatureScale scale : TemperatureScale.values()) {
+                    scalesFrom.addItem(scale);
+                    scalesTo.addItem(scale);
+                }
 
-            mainPanel.add(scalesFrom);
-            mainPanel.add(scalesTo);
-            scalesTo.setSelectedIndex(0);
-            scalesTo.setSelectedIndex(1);
+                mainPanel.add(scalesFrom);
+                mainPanel.add(scalesTo);
+                scalesTo.setSelectedIndex(0);
+                scalesTo.setSelectedIndex(1);
 
-            frame.add(mainPanel, BorderLayout.NORTH);
+                frame.add(mainPanel, BorderLayout.NORTH);
 
-            JPanel buttonPanel = new JPanel(new GridBagLayout());
-            buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                JPanel buttonPanel = new JPanel(new GridBagLayout());
+                buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-            convertButton = new JButton("Конвертировать");
-            convertButton.setEnabled(false);
-            buttonPanel.add(convertButton);
-            frame.add(buttonPanel, BorderLayout.SOUTH);
+                convertButton = new JButton("Конвертировать");
+                convertButton.setEnabled(false);
+                buttonPanel.add(convertButton);
+                frame.add(buttonPanel, BorderLayout.SOUTH);
 
-            frame.setVisible(true);
-        });
+                frame.setVisible(true);
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

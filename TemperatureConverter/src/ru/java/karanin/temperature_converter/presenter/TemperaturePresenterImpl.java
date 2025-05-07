@@ -15,8 +15,8 @@ public class TemperaturePresenterImpl implements TemperaturePresenter {
 
     @Override
     public void start() {
-        view.setPresenterCallbacks(this::onConvertClicked, this::onTemperatureChange);
         view.start();
+        view.setPresenterCallbacks(this::onConvertClicked, this::onTemperatureChange);
     }
 
     private void onConvertClicked() {
