@@ -83,21 +83,20 @@ public class Main {
         System.out.println();
 
         System.out.printf("Первые %d чисел Фибоначчи:%n", numbersCount);
-        printFibonacciNumbers(numbersCount);
-    }
-
-    public static void printFibonacciNumbers(int numbersCount) {
-        //Stream.iterate(new int[]{1, 0, 1}, numbers -> new int[]{numbers[0], numbers[2], numbers[1] + numbers[2]}).limit(numbersCount).forEach(numbers -> System.out.print(numbers[1] + " "));
-        int[] pair = {0, 1};
-        IntStream.iterate(0, number -> {
-                    int prevNumber = pair[1];
-                    int nextNumber = pair[0] + pair[1];
-                    pair[0] = pair[1];
-                    pair[1] = nextNumber;
-
-                    return prevNumber;
-                })
+        getFibonacciNumbers()
                 .limit(numbersCount)
                 .forEach(number -> System.out.print(number + " "));
+
+    }
+
+    public static IntStream getFibonacciNumbers() {
+        int[] pair = {0, 1};
+        return IntStream.iterate(0, number -> {
+            int nextNumber = pair[0] + pair[1];
+            pair[0] = pair[1];
+            pair[1] = nextNumber;
+
+            return pair[0];
+        });
     }
 }
