@@ -91,6 +91,7 @@ public class Main {
 
     public static IntStream getFibonacciNumbers() {
         int[] pair = {0, 1};
+
         return IntStream.iterate(0, number -> {
             int nextNumber = pair[0] + pair[1];
             pair[0] = pair[1];

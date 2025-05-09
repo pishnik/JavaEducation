@@ -17,7 +17,7 @@ public class Graph<E> {
             throw new IllegalArgumentException("Массив вершин графа пустой");
         }
 
-        if (edges.length == 0) {
+        if (edges.length == 0 || edges[0].length == 0) {
             throw new IllegalArgumentException("Массив ребер графа пустой");
         }
 
