@@ -17,7 +17,7 @@ public class Graph<E> {
             throw new IllegalArgumentException("Массив вершин графа пустой");
         }
 
-        if (edges.length == 0 || edges[0].length == 0) {
+        if (edges.length == 0) {
             throw new IllegalArgumentException("Массив ребер графа пустой");
         }
 
@@ -25,8 +25,16 @@ public class Graph<E> {
             throw new IllegalArgumentException(String.format("Размерность матрицы ребер графа (edges.length = %d) не соответствует количеству вершин графа (vertices.length = %d)", edges.length, vertices.length));
         }
 
-        if (edges.length != edges[0].length) {
-            throw new IllegalArgumentException(String.format("Матрица ребер графа должна быть квадратной, передана размера %dx%d", edges.length, edges[0].length));
+        for (int i = 0; i < edges.length; i++) {
+            if (edges.length != edges[i].length) {
+                throw new IllegalArgumentException(String.format("Матрица ребер графа должна быть квадратной, найден массив длинны %d (необходим %d) в позиции %d", edges[i].length, edges.length, i));
+            }
+        }
+
+        for (int i = 0; i < edges.length; i++) {
+            if (edges[i][i] != 0) {
+                throw new IllegalArgumentException(String.format("Не должно быть ребер из вершины в себя, найдено значение %d на позиции {%d, %d}", edges[i][i], i, i));
+            }
         }
 
         // массив вершин
