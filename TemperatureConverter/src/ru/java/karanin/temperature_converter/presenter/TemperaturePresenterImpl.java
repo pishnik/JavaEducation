@@ -23,12 +23,7 @@ public class TemperaturePresenterImpl implements TemperaturePresenter {
         try {
             TemperatureScale scaleFrom = view.getScaleFrom();
             TemperatureScale scaleTo = view.getScaleTo();
-
-            double inputTemperature = view.getTemperature();
-
-            model.convertTemperature(inputTemperature, scaleFrom, scaleTo);
-
-            view.showResults(model.getConvertedTemperature());
+            view.showResults(model.convertTemperature(view.getTemperature(), scaleFrom, scaleTo));
         } catch (NumberFormatException e) {
             view.showError("Значение температуры должно быть числом!");
         } catch (IllegalArgumentException e) {

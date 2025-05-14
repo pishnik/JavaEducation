@@ -114,7 +114,6 @@ public class TemperatureDesktopView implements TemperatureView {
             }
 
             if (onTemperatureChange != null) {
-
                 temperature.getDocument().addDocumentListener(new DocumentListener() {
                     @Override
                     public void insertUpdate(DocumentEvent e) {
